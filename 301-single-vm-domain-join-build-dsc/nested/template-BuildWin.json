@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VM to apply the DSC configuration to"
+      }
+    },
+    "modulesUrl": {
+      "type": "string",
+      "defaultValue": "http://cloudmsarmprod.blob.core.windows.net/cloudmsscript/Deploy-WinServer.ps1.zip",
+      "metadata": {
+        "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
+      }
+    },
+    "configurationFunction": {
+      "type": "string",
+      "defaultValue": "Deploy-WinServer.ps1\\DeployWinServer",
+      "metadata": {
+        "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_A2",
+      "metadata": {
+        "description": "Standard_A2"
+      }
+    },
+    "ServerRole": {
+      "type": "string",
+      "defaultValue": "Win",
+      "metadata": {
+        "description": "IIS/SQL3,SQL4/Win"
+      }
+    },
+    "DiskCount": {
+      "type": "string",
+      "defaultValue": "1",
+      "metadata": {
+        "description": "0-16"
+      }
+    },
+    "DiskSize": {
+      "type": "int",
+      "defaultValue": 200,
+      "metadata": {
+        "Description": "Azure VM size of the VM"
+      }
+    }
+  },
+    "variables": {
+
+    },
+    "resources": [
+    {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.15",
+            "autoUpgradeMinorVersion": true,
+            "protectedSettings": {},
+            "settings": {
+                "ModulesUrl": "[parameters('modulesUrl')]",
+                "SasToken": "",
+                "ConfigurationFunction": "[parameters('configurationFunction')]",
+                "Properties": []
+            }
+        }
+    }]
+}
+

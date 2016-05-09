@@ -1,0 +1,177 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+     "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the existing VM to apply the DSC configuration to"
+            }
+        },
+     "modulesUrl": {
+            "type": "string",
+            "defaultValue": "http://cloudmsarmdev.blob.core.windows.net/cloudmsscript/FormatDataDisk.ps1.zip",
+            "metadata": {
+                "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
+            }
+        },
+     "configurationFunction": {
+            "type": "string",
+            "defaultValue": "FormatDataDisk.ps1\\FormatDataDisks",
+            "metadata": {
+                "description": "DSC configuration function to Format Data Disks"
+            }
+        },
+      "vmSize": {
+        "type": "string",
+        "defaultValue": "A2",
+        "metadata": {
+          "description": "Azure VM Size"
+        }
+      },
+      "ServerRole": {
+        "type": "string",
+        "defaultValue": "",
+        "metadata": {
+          "description": "Azure VM Role, SQL3, SQL4, IIS, Win"
+        }
+      },
+      "DiskSize": {
+        "type": "int",
+        "defaultValue": 200,
+        "maxValue": 1024,
+        "metadata": {
+          "description": "Azure Disk SizeGB"
+        }
+      },
+      "DiskCount": {
+      "type": "string",
+        "allowedValues": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+      "defaultValue": "2",
+      "metadata": {
+        "description": "Number of Disks for vm."
+      }
+    }
+    },
+  "variables": {
+    "BaseURL": "http://cloudmsarmprod.blob.core.windows.net/",
+    "SQL3Disk": {
+      "vmSize": "[parameters('vmSize')]",
+      "SQLServer": {
+        "DataPath": "H:\\MSSqlServer\\MSSQL\\DATA\\",
+        "LogPath": "O:\\MSSqlServer\\MSSQL\\DATA\\",
+        "TempDbPath": "D:\\MSSqlServer\\MSSQL\\DATA\\",
+        "backupPath": "E:\\MSSqlServer\\MSSQL\\backup\\"
+      },
+      "dataDisks": {
+        "1": {
+          "DiskName": "H",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "2": {
+          "DiskName": "O",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "3": {
+          "DiskName": "E",
+          "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+    },
+    "SQL4Disk": {
+      "vmSize": "[parameters('vmSize')]",
+      "SQLServer": {
+        "DataPath": "H:\\MSSqlServer\\MSSQL\\DATA\\",
+        "LogPath": "O:\\MSSqlServer\\MSSQL\\DATA\\",
+        "TempDbPath": "T:\\MSSqlServer\\MSSQL\\DATA\\",
+        "backupPath": "E:\\MSSqlServer\\MSSQL\\backup\\"
+      },
+      "dataDisks": {
+        "1": {
+          "DiskName": "H",
+           "DiskSize": "[parameters('DiskSize')]"
+        },
+        "2": {
+          "DiskName": "O",
+           "DiskSize": "[parameters('DiskSize')]"
+        },
+        "3": {
+          "DiskName": "E",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+         "4": {
+          "DiskName": "T",
+          "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+    },
+    "WinDisk": {
+      "vmSize": "[parameters('vmSize')]",
+      "dataDisks": {
+        "1": {
+          "DiskName": "E",
+            "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+    },
+    "IISDisk": {
+      "vmSize": "[parameters('vmSize')]",
+      "dataDisks": {
+        "1": {
+          "DiskName": "E",
+            "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+    },
+    "DiskSKU": "[variables(concat(parameters('ServerRole'),'Disk'))]"
+  },
+    "resources": [
+    {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.15",
+            "autoUpgradeMinorVersion": true,
+            "protectedSettings": {  },
+            "settings": {
+                "ModulesUrl": "[parameters('modulesUrl')]",
+                "SasToken": "",
+                "ConfigurationFunction": "[parameters('configurationFunction')]",
+              "Properties": [
+                {
+                        "Name": "Disks",
+                        "Value": "[variables('DiskSKU').DataDisks]",
+                        "TypeName": "System.Array"
+                }
+              ]
+            }
+        }
+    }]
+}
+

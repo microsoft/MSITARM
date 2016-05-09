@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the existing VM to apply the DSC configuration to"
+            }
+        },
+      "modulesUrl": {
+            "type": "string",
+            "defaultValue": "http://cloudmsarmprod.blob.core.windows.net/cloudmsscript/Deploy-SQLServer.ps1.zip",
+            "metadata": {
+                "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
+            }
+        },
+      "configurationFunction": {
+        "type": "string",
+        "defaultValue": "Deploy-SQLServer.ps1\\DeploySQLServer",
+        "metadata": {
+          "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
+        }
+      },
+      "ServerRole": {
+          "type": "string",
+          "defaultValue": "Win",
+          "metadata": {
+            "description": "IIS/SQL3, SQL4/Win"
+          }
+        },
+      "vmSize": {
+        "type": "string",
+        "defaultValue": "Standard_A2"
+        },
+      "DiskCount": {
+        "type": "string",
+        "allowedValues": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+        "defaultValue": "2",
+        "metadata": {
+          "description": "Number of Disks for vm."
+        }
+      },
+      "DiskSize": {
+        "type": "int",
+        "defaultValue": 200,
+        "minValue": 10,
+        "maxValue": 1024,
+        "metadata": {
+          "Description": "Azure VM size of the VM"
+        }
+      }
+    },
+    "variables": {
+
+    },
+    "resources": [
+    {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.15",
+            "autoUpgradeMinorVersion": true,
+            "protectedSettings": {},
+            "settings": {
+                "ModulesUrl": "[parameters('modulesUrl')]",
+                "SasToken": "",
+                "ConfigurationFunction": "[parameters('configurationFunction')]",
+                "Properties": []
+            }
+        }
+    }]
+}
+
