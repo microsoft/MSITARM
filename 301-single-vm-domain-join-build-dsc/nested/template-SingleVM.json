@@ -217,8 +217,8 @@
   },
   "variables": {
     "apiVersion": "2015-06-15",
-    "BaseURL": "https://raw.githubusercontent.com/Microsoft/MSITARM/Master/301-single-vm-domain-join-build-dsc/",
-    "modulesUrl": "[concat(variables('BaseURL'),'scripts/DomainJoin.ps1.zip')]",
+    "BaseURL": "https://raw.githubusercontent.com/Microsoft/MSITARM/master/301-single-vm-domain-join-build-dsc/",
+    "modulesUrl": "[concat(variables('BaseURL'),'scripts/DomainJoin/DomainJoin.ps1.zip')]",
     "FormatDisksUrl": "[concat(variables('BaseURL'), 'nested/template-DataDisks.json')]",
     "vnetSubscriptionid": "[subscription().subscriptionId]",
     "vnetID":  "[concat('/subscriptions/',variables('vnetSubscriptionid'),'/resourceGroups/',parameters('vnetResourceGroup'),'/providers/Microsoft.Network/virtualnetworks/',parameters('virtualNetwork'))]",

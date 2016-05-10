@@ -10,7 +10,7 @@
     },
     "modulesUrl": {
       "type": "string",
-      "defaultValue": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/nested/Deploy-IISServer.ps1.zip",
+      "defaultValue": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/scripts/Deploy-IISServer/Deploy-IISServer.ps1.zip",
       "metadata": {
         "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
       }

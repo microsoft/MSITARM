@@ -10,7 +10,7 @@
         },
      "modulesUrl": {
             "type": "string",
-            "defaultValue": "http://cloudmsarmdev.blob.core.windows.net/cloudmsscript/FormatDataDisk.ps1.zip",
+            "defaultValue": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/master/FormatDataDisk/FormatDataDisk.ps1.zip",
             "metadata": {
                 "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
             }
