@@ -245,10 +245,10 @@
   },
     "variables": {
       "apiVersion": "2015-01-01",
-      "BaseURL": "https://raw.githubusercontent.com/Microsoft/MSITARM/Master/301-single-vm-domain-join-build-dsc/",
+      "BaseURL": "https://raw.githubusercontent.com/Microsoft/MSITARM/master/301-single-vm-domain-join-build-dsc/",
       "Role":  "[substring(parameters('ServerRole'),0,3)]",
       "configurationFunction": "FormatDataDisks.ps1\\FormatDataDisks",
-      "moduleURL": "[concat(variables('BaseURL'),'scripts/FormatDataDisk.ps1.zip')]",
+      "moduleURL": "[concat(variables('BaseURL'),'scripts/FormatDataDisk/FormatDataDisk.ps1.zip')]",
       "CreateVMUrl": "[concat(variables('BaseURL'), 'nested/template-SingleVM.json')]",
       "FormatDisksUrl": "[concat(variables('BaseURL'), 'nested/template-DataDisks.json')]",
       "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
