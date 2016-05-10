@@ -10,7 +10,7 @@
         },
       "modulesUrl": {
             "type": "string",
-            "defaultValue": "http://cloudmsarmprod.blob.core.windows.net/cloudmsscript/Deploy-SQLServer.ps1.zip",
+            "defaultValue": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/scripts/Deploy-SQLServer.ps1.zip",
             "metadata": {
                 "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
             }
@@ -69,28 +69,109 @@
         }
       }
     },
-    "variables": {
-
+  "variables": {
+    "BaseURL": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/",
+    "diskCaching": "None",
+    "SQL3Disk": {
+      "vmSize": "[parameters('vmSize')]",
+      "SQLServer": {
+        "DataPath": "H:\\MSSqlServer\\MSSQL\\DATA\\",
+        "LogPath": "O:\\MSSqlServer\\MSSQL\\DATA\\",
+        "TempDbPath": "D:\\MSSqlServer\\MSSQL\\DATA\\",
+        "backupPath": "E:\\MSSqlServer\\MSSQL\\backup\\"
+      },
+      "dataDisks": {
+        "1": {
+          "DiskName": "H",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "2": {
+          "DiskName": "O",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "3": {
+          "DiskName": "E",
+          "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
     },
+    "SQL4Disk": {
+      "vmSize": "[parameters('vmSize')]",
+      "SQLServer": {
+        "DataPath": "H:\\MSSqlServer\\MSSQL\\DATA\\",
+        "LogPath": "O:\\MSSqlServer\\MSSQL\\DATA\\",
+        "TempDbPath": "T:\\MSSqlServer\\MSSQL\\DATA\\",
+        "backupPath": "E:\\MSSqlServer\\MSSQL\\backup\\"
+      },
+      "dataDisks": {
+        "1": {
+          "DiskName": "H",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "2": {
+          "DiskName": "O",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "3": {
+          "DiskName": "E",
+          "DiskSize": "[parameters('DiskSize')]"
+        },
+        "4": {
+          "DiskName": "T",
+          "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
+    },
+    "WinDisk": {
+      "vmSize": "[parameters('vmSize')]",
+      "dataDisks": {
+        "1": {
+          "DiskName": "E",
+          "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
+    },
+    "IISDisk": {
+      "vmSize": "[parameters('vmSize')]",
+      "dataDisks": {
+        "1": {
+          "DiskName": "E",
+          "DiskSize": "[parameters('DiskSize')]"
+        }
+      },
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
+    },
+    "DiskSKU": "[variables(concat(parameters('ServerRole'),'Disk'))]"
+  },
     "resources": [
-    {
+      {
         "type": "Microsoft.Compute/virtualMachines/extensions",
         "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
         "apiVersion": "2015-06-15",
         "location": "[resourceGroup().location]",
         "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.15",
-            "autoUpgradeMinorVersion": true,
-            "protectedSettings": {},
-            "settings": {
-                "ModulesUrl": "[parameters('modulesUrl')]",
-                "SasToken": "",
-                "ConfigurationFunction": "[parameters('configurationFunction')]",
-                "Properties": []
-            }
+          "publisher": "Microsoft.Powershell",
+          "type": "DSC",
+          "typeHandlerVersion": "2.15",
+          "autoUpgradeMinorVersion": true,
+          "protectedSettings": { },
+          "settings": {
+            "ModulesUrl": "[parameters('modulesUrl')]",
+            "SasToken": "",
+            "ConfigurationFunction": "[parameters('configurationFunction')]",
+            "Properties": [
+                {
+                        "Name": "Disks",
+                        "Value": "[variables('DiskSKU')]",
+                        "TypeName": "System.Array"
+                }
+              ]
+          }
         }
-    }]
+      }
+    ]
 }
 

@@ -12,7 +12,7 @@
         },
     "localAdminUserName": {
       "type": "string",
-      "defaultValue": "ITVSO",
+      "defaultValue": "",
       "minLength": 1,
       "metadata": {
         "description": "Local Username for the Virtual Machine."
@@ -42,7 +42,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_A2",
+      "defaultValue": "",
       "metadata": {
         "description": "Size for the Virtual Machine."
       }
@@ -245,14 +245,14 @@
   },
     "variables": {
       "apiVersion": "2015-01-01",
-      "BaseURL": "http://cloudmsarmprod.blob.core.windows.net/",
+      "BaseURL": "https://raw.githubusercontent.com/Microsoft/MSITARM/Master/301-single-vm-domain-join-build-dsc/",
       "Role":  "[substring(parameters('ServerRole'),0,3)]",
       "configurationFunction": "FormatDataDisks.ps1\\FormatDataDisks",
-      "moduleURL": "[concat(variables('BaseURL'),'cloudmsscript/FormatDataDisk.ps1.zip')]",
-      "CreateVMUrl": "[concat(variables('BaseURL'), 'cloudmssinglevm/template-SingleVM.json')]",
-      "FormatDisksUrl": "[concat(variables('BaseURL'), 'cloudmsvm/template-DataDisks.json')]",
-      "BuildMachineRoleURL": "[concat(variables('BaseURL'),'cloudmsvm/template-Build',variables('Role'), '.json')]",
-      "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),'cloudmsvm/template-ConfigureDscPull.json')]",
+      "moduleURL": "[concat(variables('BaseURL'),'scripts/FormatDataDisk.ps1.zip')]",
+      "CreateVMUrl": "[concat(variables('BaseURL'), 'nested/template-SingleVM.json')]",
+      "FormatDisksUrl": "[concat(variables('BaseURL'), 'nested/template-DataDisks.json')]",
+      "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
+      "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),'nested/template-ConfigureDscPull.json')]",
       "AzureAutomation": {
         "Url": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip",
         "RegistrationKey": "[parameters('PullServerRegistrationKey')]",
