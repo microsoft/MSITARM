@@ -105,83 +105,84 @@
     "variables": {
 
     },
-    "resources": [
+  "resources": [
     {
-        "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
-        "apiVersion": "2015-06-15",
-        "location": "[resourceGroup().location]",
-        "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.15",
-            "autoUpgradeMinorVersion": true,
-            "protectedSettings": {
-                "Items": {
-                    "registrationKeyPrivate": "[parameters('registrationKey')]"
-                }
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.15",
+        "autoUpgradeMinorVersion": true,
+        "protectedSettings": {
+          "Items": {
+            "registrationKeyPrivate": "[parameters('registrationKey')]"
+          }
+        },
+        "settings": {
+          "ModulesUrl": "[parameters('modulesUrl')]",
+          "SasToken": "",
+          "ConfigurationFunction": "[parameters('configurationFunction')]",
+          "Properties": [
+            {
+              "Name": "RegistrationKey",
+              "Value": {
+                "UserName": "PLACEHOLDER_DONOTUSE",
+                "Password": "PrivateSettingsRef:registrationKeyPrivate"
+              },
+              "TypeName": "System.Management.Automation.PSCredential"
             },
-            "settings": {
-                "ModulesUrl": "[parameters('modulesUrl')]",
-                "SasToken": "",
-                "ConfigurationFunction": "[parameters('configurationFunction')]",
-                "Properties": [
-                    {
-                        "Name": "RegistrationKey",
-                        "Value": {
-                            "UserName": "PLACEHOLDER_DONOTUSE",
-                            "Password": "PrivateSettingsRef:registrationKeyPrivate"
-                        },
-                        "TypeName": "System.Management.Automation.PSCredential"
-                    },
-                    {
-                        "Name": "RegistrationUrl",
-                        "Value": "[parameters('registrationUrl')]",
-                        "TypeName": "System.String"
-                    },
-                    {
-                        "Name": "NodeConfigurationName",
-                        "Value": "[parameters('nodeConfigurationName')]",
-                        "TypeName": "System.String"
-                    },
-                    {
-                        "Name": "ConfigurationMode",
-                        "Value": "[parameters('configurationMode')]",
-                        "TypeName": "System.String"
-                    },
-                    {
-                        "Name": "ConfigurationModeFrequencyMins",
-                        "Value": "[parameters('configurationModeFrequencyMins')]",
-                        "TypeName": "System.Int32"
-                    },
-                    {
-                        "Name": "RefreshFrequencyMins",
-                        "Value": "[parameters('refreshFrequencyMins')]",
-                        "TypeName": "System.Int32"
-                    },
-                    {
-                        "Name": "RebootNodeIfNeeded",
-                        "Value": "[parameters('rebootNodeIfNeeded')]",
-                        "TypeName": "System.Boolean"
-                    },
-                    {
-                        "Name": "ActionAfterReboot",
-                        "Value": "[parameters('actionAfterReboot')]",
-                        "TypeName": "System.String"
-                    },
-                    {
-                        "Name": "AllowModuleOverwrite",
-                        "Value": "[parameters('allowModuleOverwrite')]",
-                        "TypeName": "System.Boolean"
-                    },
-                    {
-                        "Name": "Timestamp",
-                        "Value": "[parameters('timestamp')]",
-                        "TypeName": "System.String"
-                    }
-                ]
+            {
+              "Name": "RegistrationUrl",
+              "Value": "[parameters('registrationUrl')]",
+              "TypeName": "System.String"
+            },
+            {
+              "Name": "NodeConfigurationName",
+              "Value": "[parameters('nodeConfigurationName')]",
+              "TypeName": "System.String"
+            },
+            {
+              "Name": "ConfigurationMode",
+              "Value": "[parameters('configurationMode')]",
+              "TypeName": "System.String"
+            },
+            {
+              "Name": "ConfigurationModeFrequencyMins",
+              "Value": "[parameters('configurationModeFrequencyMins')]",
+              "TypeName": "System.Int32"
+            },
+            {
+              "Name": "RefreshFrequencyMins",
+              "Value": "[parameters('refreshFrequencyMins')]",
+              "TypeName": "System.Int32"
+            },
+            {
+              "Name": "RebootNodeIfNeeded",
+              "Value": "[parameters('rebootNodeIfNeeded')]",
+              "TypeName": "System.Boolean"
+            },
+            {
+              "Name": "ActionAfterReboot",
+              "Value": "[parameters('actionAfterReboot')]",
+              "TypeName": "System.String"
+            },
+            {
+              "Name": "AllowModuleOverwrite",
+              "Value": "[parameters('allowModuleOverwrite')]",
+              "TypeName": "System.Boolean"
+            },
+            {
+              "Name": "Timestamp",
+              "Value": "[parameters('timestamp')]",
+              "TypeName": "System.String"
             }
+          ]
         }
-    }]
+      }
+    }
+  ]
 }
 
