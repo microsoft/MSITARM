@@ -12,7 +12,7 @@
         },
     "localAdminUserName": {
       "type": "string",
-      "defaultValue": "ITVSO",
+      "defaultValue": "",
       "minLength": 1,
       "metadata": {
         "description": "Local Username for the Virtual Machine."
@@ -141,10 +141,10 @@
     },
     "domainName": {
       "type": "string",
-      "defaultValue": "redmond.corp.microsoft.com",
+      "defaultValue": "domain1.com",
       "allowedValues": [
-        "redmond.corp.microsoft.com",
-        "partners.extranet.microsoft.com"
+        "domain1.com",
+        "domain2.com"
       ],
       "metadata": {
         "description": "The FQDN of the AD domain"
@@ -153,7 +153,7 @@
     "appID": {
       "type": "string",
       "minLength": 1,
-      "defaultValue": "ICTO-1167",
+      "defaultValue": "",
       "metadata": {
         "description": "appID tag for the Virtual Machine."
       }
@@ -161,7 +161,7 @@
     "orgID": {
       "type": "string",
       "minLength": 1,
-      "defaultValue": "500084",
+      "defaultValue": "",
       "metadata": {
         "description": "orgID tag for the Virtual Machine."
       }
@@ -195,14 +195,14 @@
     },
     "virtualNetwork": {
       "type": "string",
-      "defaultValue": "MSITPILOT01-CORP-CUS-1",
+      "defaultValue": "",
       "metadata": {
         "description": "Name for the VirtualNetwork"
       }
     },
     "vnetResourceGroup": {
       "type": "string",
-      "defaultValue": "ERNetwork",
+      "defaultValue": "",
       "metadata": {
         "description": "Name for the Resource Group that contains VirtualNetwork"
       }
@@ -223,7 +223,7 @@
     },
     "ouPath": {
       "type": "string",
-      "defaultValue": "OU=ITManaged,OU=ITServices,DC=redmond,DC=corp,DC=microsoft,DC=com",
+      "defaultValue": "",
       "metadata": {
         "description": "The Organizational Unit the VM will join"
       }
@@ -237,7 +237,7 @@
       },
     "PullServerRegistrationURI": {
          "type": "string",
-        "defaultValue": "https://eus2-agentservice-prod-1.azure-automation.net/accounts/d9886cc8-9990-4461-972b-155d710f1ace",
+        "defaultValue": "",
         "metadata": {
           "description": "The pull server URI"
         }
@@ -245,14 +245,14 @@
   },
     "variables": {
       "apiVersion": "2015-01-01",
-      "BaseURL": "http://cloudmsarmprod.blob.core.windows.net/",
+      "BaseURL": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/",
       "Role":  "[substring(parameters('ServerRole'),0,3)]",
       "configurationFunction": "FormatDataDisks.ps1\\FormatDataDisks",
-      "moduleURL": "[concat(variables('BaseURL'),'cloudmsscript/FormatDataDisk.ps1.zip')]",
-      "CreateVMUrl": "[concat(variables('BaseURL'), 'cloudmssinglevm/template-SingleVM.json')]",
-      "FormatDisksUrl": "[concat(variables('BaseURL'), 'cloudmsvm/template-DataDisks.json')]",
-      "BuildMachineRoleURL": "[concat(variables('BaseURL'),'cloudmsvm/template-Build',variables('Role'), '.json')]",
-      "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),'cloudmsvm/template-ConfigureDscPull.json')]",
+      "moduleURL": "[concat(variables('BaseURL'),'scripts/FormatDataDisk.ps1.zip')]",
+      "CreateVMUrl": "[concat(variables('BaseURL'), 'nested/template-SingleVM.json')]",
+      "FormatDisksUrl": "[concat(variables('BaseURL'), 'nested/template-DataDisks.json')]",
+      "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
+      "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),'nested/template-ConfigureDscPull.json')]",
       "AzureAutomation": {
         "Url": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip",
         "RegistrationKey": "[parameters('PullServerRegistrationKey')]",

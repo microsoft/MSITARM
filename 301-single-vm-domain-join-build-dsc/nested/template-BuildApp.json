@@ -10,14 +10,14 @@
     },
     "modulesUrl": {
       "type": "string",
-      "defaultValue": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/nested/Deploy-IISServer.ps1.zip",
+      "defaultValue": "http://cptteamb.blob.core.windows.net/cloudmsscript/Deploy-AppServer.ps1.zip",
       "metadata": {
         "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
       }
     },
     "configurationFunction": {
       "type": "string",
-      "defaultValue": "Deploy-WebServer.ps1\\DeployWebServer",
+      "defaultValue": "Deploy-AppServer.ps1\\DeployAppServer",
       "metadata": {
         "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
       }
@@ -36,42 +36,21 @@
         "description": "IIS/SQL/APP"
       }
     },
-     "DiskCount": {
-        "type": "string",
-        "allowedValues": [
-          "0",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "10",
-          "11",
-          "12",
-          "13",
-          "14",
-          "15",
-          "16"
-        ],
-        "defaultValue": "2",
-        "metadata": {
-          "description": "Number of Disks for vm."
-        }
-      },
-     "DiskSize": {
-        "type": "int",
-        "defaultValue": 200,
-        "minValue": 10,
-        "maxValue": 1024,
-        "metadata": {
-          "Description": "Azure VM size of the VM"
-        }
+    "DiskCount": {
+      "type": "string",
+      "defaultValue": "1",
+      "metadata": {
+        "description": "1-4"
       }
     },
+    "DiskSize": {
+      "type": "string",
+      "defaultValue": "200",
+      "metadata": {
+        "Description": "Azure VM size of the VM"
+      }
+    }
+  },
     "variables": {
 
     },

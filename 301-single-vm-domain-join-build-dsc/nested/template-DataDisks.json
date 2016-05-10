@@ -72,7 +72,7 @@
     }
     },
   "variables": {
-    "BaseURL": "http://cloudmsarmprod.blob.core.windows.net/",
+    "BaseURL": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/",
     "SQL3Disk": {
       "vmSize": "[parameters('vmSize')]",
       "SQLServer": {
@@ -95,7 +95,7 @@
           "DiskSize": "[parameters('DiskSize')]"
         }
       },
-      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
     },
     "SQL4Disk": {
       "vmSize": "[parameters('vmSize')]",
@@ -133,7 +133,7 @@
             "DiskSize": "[parameters('DiskSize')]"
         }
       },
-      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
     },
     "IISDisk": {
       "vmSize": "[parameters('vmSize')]",
@@ -143,7 +143,7 @@
             "DiskSize": "[parameters('DiskSize')]"
         }
       },
-      "vmDiskTemplate": "[concat(variables('BaseURL'), 'cloudmsdisk/DiskArray.json')]"
+      "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
     },
     "DiskSKU": "[variables(concat(parameters('ServerRole'),'Disk'))]"
   },
