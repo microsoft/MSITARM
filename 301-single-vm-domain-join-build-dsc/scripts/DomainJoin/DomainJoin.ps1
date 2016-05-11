@@ -237,8 +237,9 @@
 
                         $login.AddToRole('sysadmin')
                         $login.Alter()
+                                                
 
-                          ######################### +psitadmin ######################################
+                        ######################### +psitadmin ######################################
                         $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $Srv, $psitadmin
                         $login.LoginType = 'WindowsUser'
                         $login.PasswordExpirationEnabled = $false
@@ -258,14 +259,18 @@
                         $login.AddToRole('sysadmin')
                         $login.Alter()
 
+                        try{
+                        ########################## -[localadmin] #####################################
+                        $q = "if Exists(select 1 from sys.syslogins where name='" + "$locallogin" + "') drop login [$locallogin]"
+				        Invoke-Sqlcmd -Database master -Query $q
+                        }catch{} #nice to have but dont want it to be fatal.
+
                         ########################## -[BUILTIN\Administrators] #####################################
                         $q = "if Exists(select 1 from sys.syslogins where name='" + $ntlogin + "') drop login [BUILTIN\Administrators]"
 				        Invoke-Sqlcmd -Database master -Query $q
+                        
 
-
-                        ########################## -[localadmin] #####################################
-                        $q = "if Exists(select 1 from sys.syslogins where name='" + $ntlogin + "') drop login [$locallogin]"
-				        Invoke-Sqlcmd -Database master -Query $q
+                       
 
                     } catch {}
                 }
