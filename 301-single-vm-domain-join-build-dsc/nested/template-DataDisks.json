@@ -10,7 +10,7 @@
         },
      "modulesUrl": {
             "type": "string",
-            "defaultValue": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/master/FormatDataDisk/FormatDataDisk.ps1.zip",
+            "defaultValue": "https://raw.githubusercontent.com/Microsoft/MSITARM/master/301-single-vm-domain-join-build-dsc/scripts/FormatDataDisk/FormatDataDisk.ps1.zip",
             "metadata": {
                 "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
             }
@@ -72,7 +72,7 @@
     }
     },
   "variables": {
-    "BaseURL": "https://github.com/Microsoft/MSITARM/tree/master/301-single-vm-domain-join-build-dsc/",
+    "BaseURL": "https://raw.githubusercontent.com/Microsoft/MSITARM/master/301-single-vm-domain-join-build-dsc/",
     "SQL3Disk": {
       "vmSize": "[parameters('vmSize')]",
       "SQLServer": {
