@@ -259,8 +259,9 @@
                         $login.AddToRole('sysadmin')
                         $login.Alter()
 
-                        try{
+                        
                         ########################## -[localadmin] #####################################
+                        try{
                         $q = "if Exists(select 1 from sys.syslogins where name='" + "$locallogin" + "') drop login [$locallogin]"
 				        Invoke-Sqlcmd -Database master -Query $q
                         }catch{} #nice to have but dont want it to be fatal.
