@@ -439,8 +439,9 @@
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
-        "typeHandlerVersion": "2.8",
+        "typeHandlerVersion": "2.17",
         "settings": {
+          "WmfVersion": "5.0",
           "ModulesUrl": "[variables('modulesUrl')]",
           "SasToken": "",
           "ConfigurationFunction": "DomainJoin.ps1\\DomainJoin",
