@@ -193,6 +193,13 @@
         "description": "local admins that can login to the VMs. csv list of domain\\user"
       }
     },
+    "SQLAdmins": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "local admins that can login to the VMs. csv list of domain\\user"
+      }
+    },
     "virtualNetwork": {
       "type": "string",
       "defaultValue": "",
@@ -212,13 +219,6 @@
       "defaultValue": "Subnet-1",
       "metadata": {
         "description": "Name for the subnet"
-      }
-    },
-    "subnetPrefix": {
-      "type": "string",
-      "defaultValue": "10.0.0.0/24",
-      "metadata": {
-        "description": "Subnet prefix that defines how many IP addresses are available on the Subnet(10.0.0.0/24)"
       }
     },
     "ouPath": {
@@ -345,9 +345,6 @@
                   },
                 "subnetName": {
                       "value": "[parameters('subnetName')]"
-                  },
-                  "subnetPrefix": {
-                      "value": "[parameters('subnetPrefix')]"
                   },
                   "ouPath": {
                       "value": "[parameters('ouPath')]"
