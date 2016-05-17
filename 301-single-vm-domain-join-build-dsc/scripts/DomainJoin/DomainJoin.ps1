@@ -8,11 +8,12 @@
         [System.Management.Automation.PSCredential] $LocalAccount,
          [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential] $DomainAccount,
-        [string] $AdditionalAdmins=''
+        [string] $LocalAdmins='',
+        [string] $SQLAdmins=''
     ) 
     
     
-    $adminlist = $AdditionalAdmins.split(",")
+    $adminlist = $LocalAdmins.split(",")
     
     Import-DscResource -ModuleName xComputerManagement
     Import-DscResource -ModuleName xActiveDirectory
@@ -38,7 +39,7 @@
         ############################################
         $sw.WriteLine("$(Get-Date -Format g) Begin Domain Join")
         
-        # Change E: => F: to move DVD to F.
+        # Change E: => F: to move DVD to F because E will be utilized as a data disk.
         $sw.WriteLine("$(Get-Date -Format g) Change E: => F:...")
         $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = 'E:'"
         Set-WmiInstance -input $drive -Arguments @{DriveLetter="F:"}
@@ -88,10 +89,9 @@
             schtasks /Create /RU "NT AUTHORITY\SYSTEM" /F /SC "Once" /st $starttime /z /v1 /TN "$RemoveJobName" /TR "schtasks.exe /delete /tn $AddJobName /f"
 
         }
-        
-        
+                
         ############################################
-        # if SQL Add Built in administrators, Join to Domain, tools
+        # if SQL Add Built in administrators
         ############################################
         
  
@@ -213,8 +213,6 @@
                         ###############################################################
                         $NtLogin = $($using:DomainAccount.UserName) 
                         $LocalLogin = "$($env:computername)\$($using:LocalAccount.UserName)"
-                        $psitadmin = "Redmond\psitadm"
-                        $SQLSvcAccounts = "Redmond\SQLSvcAccounts"
                         ###############################################################
 
                         [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.ConnectionInfo") 
@@ -237,32 +235,28 @@
 
                         $login.AddToRole('sysadmin')
                         $login.Alter()
-                                                
-
-                        ######################### +psitadmin ######################################
-                        $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $Srv, $psitadmin
-                        $login.LoginType = 'WindowsUser'
-                        $login.PasswordExpirationEnabled = $false
-                        $login.Create()
-
-                        #  Next two lines to give the new login a server role, optional
-                        $login.AddToRole('sysadmin')
-                        $login.Alter()
-
-                        ########################## +SQLSvcAccounts #####################################
-                        $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $Srv, $SQLSvcAccounts
-                        $login.LoginType = 'WindowsUser'
-                        $login.PasswordExpirationEnabled = $false
-                        $login.Create()
-
-                        #  Next two lines to give the new login a server role, optional
-                        $login.AddToRole('sysadmin')
-                        $login.Alter()
-
+                          
+                        ########################## +SQLSvcAccounts ##################################### 
+                        try{                                                                    
+                        $SQLAdminsList = $($using:SQLAdmins).split(",")
                         
+                        foreach($SysAdmin in $SQLAdminsList) {
+
+                           
+                            $login = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Login -ArgumentList $Srv, $SysAdmin
+                            $login.LoginType = 'WindowsUser'
+                            $login.PasswordExpirationEnabled = $false
+                            $login.Create()
+
+                            #  Next two lines to give the new login a server role, optional
+                            $login.AddToRole('sysadmin')
+                            $login.Alter()           
+                         }
+                        }catch{} #nice to have but dont want it to be fatal.
+
                         ########################## -[localadmin] #####################################
                         try{
-                        $q = "if Exists(select 1 from sys.syslogins where name='" + "$locallogin" + "') drop login [$locallogin]"
+                        $q = "if Exists(select 1 from sys.syslogins where name='" + $locallogin + "') drop login [$locallogin]"
 				        Invoke-Sqlcmd -Database master -Query $q
                         }catch{} #nice to have but dont want it to be fatal.
 
@@ -270,8 +264,6 @@
                         $q = "if Exists(select 1 from sys.syslogins where name='" + $ntlogin + "') drop login [BUILTIN\Administrators]"
 				        Invoke-Sqlcmd -Database master -Query $q
                         
-
-                       
 
                     } catch {}
                 }

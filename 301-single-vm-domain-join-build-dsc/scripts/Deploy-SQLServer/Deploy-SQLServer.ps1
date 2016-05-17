@@ -36,6 +36,7 @@ Configuration DeploySQLServer
                     $sw.WriteLine("$(Get-Date -Format g) -----------------------------------------------------.")    
                     $sw.WriteLine("$(Get-Date -Format g) Set DataPath=$($using:disks.SQLServer.DataPath)")    
                     $sw.WriteLine("$(Get-Date -Format g) Set LogPath=$($using:disks.SQLServer.LogPath)")    
+                    $sw.WriteLine("$(Get-Date -Format g) Set TempDbPath=$($using:disks.SQLServer.TempDbPath)")    
                     $sw.WriteLine("$(Get-Date -Format g) Set BackupPath=$($using:disks.SQLServer.BackupPath)")    
                     $sw.WriteLine("$(Get-Date -Format g) -----------------------------------------------------.")    
                     try{      
@@ -293,13 +294,27 @@ Configuration DeploySQLServer
                         # num of data files = num of procs, equi-sized, autogrow
                         ############################################
                         $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = 'T:'"
-                        if ($drive){
+                            if ($drive){
+                                $TempDrive="T:"
+                                $TempLogDrive="T:"
 
+                                $TempPath = $($using:disks.SQLServer.TempDbPath)
+                                $TempLogPath = $($using:disks.SQLServer.TempDbPath) 
+
+                            }else{
+                                $TempDrive="H:"
+                                $TempLogDrive="O:"
+
+                                $TempPath = $($using:disks.SQLServer.TempDbPath)
+                                $TempLogPath = $($using:disks.SQLServer.LogPath) 
+
+                            }
+                        
                             #$sw.WriteLine("$(Get-Date -Format g) Configuting Temp DB on T:...")
-				            "$(Get-Date -Format g) Configuring Temp DB on T:..."
+				            "$(Get-Date -Format g) Configuring Temp DB on  $TempDrive..."
 
 	                        # get the spavce avail on T: and subtract 50 GB.  From that, divide it up to the number of files:
-                            $FreeSpaceGB = (Get-WmiObject -Class win32_volume -Filter "DriveLetter = 'T:'").FreeSpace / 1024 / 1024 / 1024
+                            $FreeSpaceGB = (Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$TempDrive'").FreeSpace / 1024 / 1024 / 1024
                             $TempDBSpaceAvailGB = $FreeSpaceGB - 50
 	                        $TempDBSpaceAvailMB = $TempDBSpaceAvailGB * 1024
 
@@ -310,22 +325,31 @@ Configuration DeploySQLServer
                             $maxFileGrowthSizeMB = [math]::truncate($maxFileGrowthSizeMB)
 	                        $fileSize     = '1000'
                             $fileGrowthMB = '50'            
+                            	                        
 
-                            $TempPath = $Srv.RootDirectory -Replace "C:", "T:"
+                            if(!$TempPath) {
+                            $TempPath = $Srv.RootDirectory -Replace "C:", $TempDrive
 	                        $TempPath = $TempPath + '\'
-
+                            $TempLogPath = $TempPath 
+                            }
+                            ################################################################
 	                        # Create the folder for our temp db files
-                            $sw.WriteLine("$(Get-Date -Format g) Creating $($TempPath)")
-				            "$(Get-Date -Format g) Creating $($TempPath)"
-                            New-Item -path $TempPath -name "Data" -itemType "directory"
+                            if($(test-path -path $($tempPath)) -eq $false) {
+                                $sw.WriteLine("$(Get-Date -Format g) Creating $($TempPath)")
+				                "$(Get-Date -Format g) Creating $($TempPath)"
+                                md $($TempPath) 
+                            }
+                            ################################################################
+
 
 	                        # Build the sql commands to move/create the files and invoke them...
 	
+                            ################################################################
 	                        # 1st data file	
                             $sw.WriteLine("$(Get-Date -Format g) Moving first data file...")	
 				            "$(Get-Date -Format g) Moving first data file..."
 
-	                        $q = "ALTER DATABASE [tempdb] MODIFY FILE (NAME = tempdev, FILENAME = '$($TempPath)data\tempdb.mdf')"
+	                        $q = "ALTER DATABASE [tempdb] MODIFY FILE (NAME = tempdev, FILENAME = '$($TempPath)\tempdb.mdf')"
 				            $sw.WriteLine("$(Get-Date -Format g)  - $($q)")
 	                        Invoke-Sqlcmd -Database master -Query $q
 
@@ -339,19 +363,28 @@ Configuration DeploySQLServer
 				            $sw.WriteLine("$(Get-Date -Format g)  - $($q)")
 	                        Invoke-Sqlcmd -Database master -Query $q
 
-
 	                        # remaining data files
 	                        $sw.WriteLine("$(Get-Date -Format g) Creating remaining data files...")	
 				            "$(Get-Date -Format g) Creating remaining data files..."
                             for ($i = 2; $i -le $fileCount; $i++) {
-		                        $q = "ALTER DATABASE [tempdb] ADD FILE ( NAME = tempdev$($i), SIZE = $($fileSize)MB, MAXSIZE = $($maxFileGrowthSizeMB)MB, FILEGROWTH = $($fileGrowthMB)MB, FILENAME = '$($TempPath)data\tempdb$($i).mdf')"; 
+		                        $q = "ALTER DATABASE [tempdb] ADD FILE ( NAME = tempdev$($i), SIZE = $($fileSize)MB, MAXSIZE = $($maxFileGrowthSizeMB)MB, FILEGROWTH = $($fileGrowthMB)MB, FILENAME = '$($TempPath)\tempdb$($i).mdf')"; 
 		                        Invoke-Sqlcmd -Database master -Query $q	                        
                             }
-	
+	                        ################################################################
+
+                            ################################################################
+                            if($(test-path -path $($tempLogPath)) -eq $false) {
+                                $sw.WriteLine("$(Get-Date -Format g) Creating $($TempLogPath)")
+				                "$(Get-Date -Format g) Creating $($TempLogPath)"
+                                md $TempLogPath 
+                            }
+                            ################################################################
 	                        # log file
+                            ################################################################
                             $sw.WriteLine("$(Get-Date -Format g) Moving log file...")	
 				            "$(Get-Date -Format g) Moving log file..."
-	                        $q = "ALTER DATABASE [tempdb] MODIFY FILE (NAME = templog, FILENAME = '$($TempPath)data\templog.ldf')"
+
+	                        $q = "ALTER DATABASE [tempdb] MODIFY FILE (NAME = templog, FILENAME = '$($TempLogPath)\templog.ldf')"
 				            $sw.WriteLine("$(Get-Date -Format g)  - $($q)")
 				            Invoke-Sqlcmd -Database master -Query $q
 
@@ -372,7 +405,7 @@ Configuration DeploySQLServer
                             net start mssqlserver
                             net start sqlserveragent
                             
-                        }
+                        
 
                     }
 
@@ -397,7 +430,7 @@ Configuration DeploySQLServer
                     
                     $sw.WriteLine("$(Get-Date -Format g) Fin.")	
                     $sw.Close()
-                
+                    
                 }
             
             }
