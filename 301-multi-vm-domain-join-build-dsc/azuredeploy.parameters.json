@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
   "parameters": {
-    "vmName": {
+      "vmName": {
       "value": ""
     },
     "localAdminUserName": {
@@ -17,22 +17,19 @@
     "domainJoinPassword": {
       "value": ""
     },
-    "SQLAdmins": {
-      "value": ""
-    },
-   "localAdmins": {
+    "localAdmins": {
       "value": ""
     },
     "appID": {
-      "value": ""
-    },
-    "orgID": {
       "value": ""
     },
     "domainName": {
       "value": ""
     },
     "env": {
+      "value": ""
+    },
+    "orgID": {
       "value": ""
     },
     "imagePublisher": {
@@ -48,7 +45,7 @@
       "value": ""
     },
     "storageAccountType": {
-      "value": ""
+      "value": "Standard_LRS"
     },
     "userImageStorageAccountName": {
       "value": ""
@@ -56,20 +53,17 @@
     "numberOfInstances": {
       "value": 1
     },
-    "virtualNetwork": {
+     "virtualNetwork": {
       "value": ""
     },
     "vnetResourceGroup": {
       "value": ""
     },
-    "subnetName": {
-      "value": ""
-    },
     "vmSize": {
-      "value": ""
+      "value": "Standard_A2"
     },
-    "Diskconfig": {
-      "value": "Win"
+    "ServerRole": {
+      "value": "App"
     },
     "DiskSize": {
       "value": "200"

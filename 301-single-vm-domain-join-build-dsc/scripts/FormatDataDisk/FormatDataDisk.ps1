@@ -32,9 +32,9 @@
                             if($DiskExists) {      
                             
                                 if($DiskExists.PartitionStyle -eq 'Raw') {
-                                        $DiskExists |  Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -DriveLetter $($disk.DiskName) -UseMaximumSize | Format-Volume  -FileSystem NTFS -Confirm:$false     
+                                        $DiskExists |  Initialize-Disk -PartitionStyle MBR -PassThru | New-Partition -DriveLetter $($disk.DiskName) -UseMaximumSize | Format-Volume -NewFileSystemLabel $($disk.DiskLabel) -FileSystem NTFS -Confirm:$false     
                                     } else {
-                                        $DiskExists |  New-Partition -DriveLetter $($disk.DiskName) -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false  
+                                        $DiskExists |  New-Partition -DriveLetter $($disk.DiskName) -UseMaximumSize | Format-Volume -NewFileSystemLabel $($disk.DiskLabel) -FileSystem NTFS -Confirm:$false    
                                     } 
                           
                             } else {

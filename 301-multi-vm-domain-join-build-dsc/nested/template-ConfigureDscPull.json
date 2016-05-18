@@ -8,6 +8,20 @@
                 "description": "Name of the existing VM to apply the DSC configuration to"
             }
         },
+        "modulesUrl": {
+            "type": "string",
+            "defaultValue": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip",
+            "metadata": {
+                "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
+            }
+        },
+        "configurationFunction": {
+            "type": "string",
+            "defaultValue": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull",
+            "metadata": {
+                "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
+            }
+        },
         "registrationKey": {
           "type": "securestring",
           "defaultValue": "",
@@ -31,7 +45,7 @@
         },
         "configurationMode": {
             "type": "string",
-            "defaultValue": "ApplyAndAutoCorrect",
+            "defaultValue": "ApplyAndMonitor",
             "allowedValues": [
                 "ApplyOnly",
                 "ApplyAndMonitor",
@@ -89,9 +103,7 @@
         }
     },
     "variables": {
-      "BaseURL": "https://github.com/Azure/azure-quickstart-templates/raw/master/",
-      "configurationFunction": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull",
-      "modulesUrl": "[concat(variables('BaseURL'),'dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip')]"
+
     },
   "resources": [
     {
@@ -110,9 +122,9 @@
           }
         },
         "settings": {
-          "ModulesUrl": "[variables('modulesUrl')]",
+          "ModulesUrl": "[parameters('modulesUrl')]",
           "SasToken": "",
-          "ConfigurationFunction": "[variables('configurationFunction')]",
+          "ConfigurationFunction": "[parameters('configurationFunction')]",
           "Properties": [
             {
               "Name": "RegistrationKey",
