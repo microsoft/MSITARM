@@ -12,7 +12,7 @@
         },
     "localAdminUserName": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "ITVSO",
       "minLength": 1,
       "metadata": {
         "description": "Local Username for the Virtual Machine."
@@ -42,24 +42,16 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "Standard_A2",
       "metadata": {
         "description": "Size for the Virtual Machine."
-      }
-    },
-    "numberOfInstances": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "Number of VMs to deploy"
       }
     },
     "imagePublisher": {
       "type": "string",
       "defaultValue": "MicrosoftWindowsServer",
       "allowedValues": [
-        "MicrosoftWindowsServer",
-        "MicrosoftSQLServer"
+        "MicrosoftWindowsServer"
       ],
       "metadata": {
         "description": "OS Image Publisher. https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/"
@@ -76,6 +68,11 @@
       "type": "string",
       "minLength": 1,
       "defaultValue": "2012-R2-Datacenter",
+      "allowedValues": [
+        "2008-R2-SP1",
+		    "2012-Datacenter",
+		    "2012-R2-Datacenter"
+      ],
       "metadata": {
         "description": "Allowed Windows values: 2008-R2-SP1, 2012-Datacenter, 2012-R2-Datacenter. Allowed SQL values: Enterprise, Standard, Web, Express."
       }
@@ -85,9 +82,7 @@
       "defaultValue": "Win",
       "allowedValues": [
         "Win",
-        "IIS",
-        "SQLStd",
-        "SQLPrem"
+        "IIS"
       ]
     },
     "DiskCount": {
@@ -135,19 +130,21 @@
     "StorageAccountType": {
       "type": "string",
       "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS"
+      ],
       "metadata": {
         "description": "The Storage Account where the VM image(s) will be created"
       }
     },
     "domainName": {
       "type": "string",
-      "defaultValue": "domain1.com",
+      "defaultValue": "redmond.corp.microsoft.com",
       "allowedValues": [
-        "domain1.com",
-        "domain2.com"
+        "redmond.corp.microsoft.com"
       ],
       "metadata": {
-        "description": "The FQDN of the AD domain"
+        "description": "The FQDN of the AD domain, currently only Redmond domain is supported. "
       }
     },
     "appID": {
@@ -190,14 +187,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "local admins that can login to the VMs. csv list of domain\\user"
-      }
-    },
-    "SQLAdmins": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "local admins that can login to the VMs. csv list of domain\\user"
+        "description": "local admins that can login to the VMs. csv list of domain\\user,domain\\group "
       }
     },
     "virtualNetwork": {
@@ -209,7 +199,7 @@
     },
     "vnetResourceGroup": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "ERNetwork",
       "metadata": {
         "description": "Name for the Resource Group that contains VirtualNetwork"
       }
@@ -223,49 +213,49 @@
     },
     "ouPath": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "OU=ITManaged,OU=ITServices,DC=redmond,DC=corp,DC=microsoft,DC=com",
       "metadata": {
         "description": "The Organizational Unit the VM will join"
       }
     },
     "PullServerRegistrationKey": {
          "type": "string",
-        "defaultValue": "",
+        "defaultValue": "DtOvyfhxbRkS+kXw9PerJP4RQx48HxCcvKruEyd/vfz2gKplxr+UtJDpsdBjltyDhhMa5As4OGKFb3M+p5vlbQ==",
         "metadata": {
           "description": "The Organizational Unit the VM will join"
         }
       },
     "PullServerRegistrationURI": {
          "type": "string",
-        "defaultValue": "",
+        "defaultValue": "https://eus2-agentservice-prod-1.azure-automation.net/accounts/d9886cc8-9990-4461-972b-155d710f1ace",
         "metadata": {
           "description": "The pull server URI"
         }
       }
   },
-    "variables": {
+   "variables": {
       "apiVersion": "2015-01-01",
       
       "branch": "develop",
       "folder":  "/301-single-vm-domain-join-build-dsc/",
       "baseURL":  "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
-  
-      "domainJoinzip": "scripts/DomainJoin/DomainJoin.ps1.zip",
-      "formatDiskszip": "scripts/FormatDataDisk/FormatDataDisk.ps1.zip",
+    
+      "domainJoinzip": "scripts/DomainJoin.ps1.zip",
+      "formatDiskszip": "scripts/FormatDataDisk.ps1.zip",
       "formatDiskstemplate": "nested/template-DataDisks.json",
       "createVMtemplate": "nested/template-SingleVM.json",
       "configurePullTemplate":  "nested/template-ConfigureDscPull.json",
       "configurationFunction": "FormatDataDisks.ps1\\FormatDataDisks",
 
-      "Role": "[substring(parameters('DiskConfig'),0,3)]",
-           
+      "Role":  "[substring(parameters('DiskConfig'),0,3)]",
+
       "moduleURL": "[concat(variables('BaseURL'),variables('formatDiskszip'))]",
       "CreateVMUrl": "[concat(variables('BaseURL'),variables('createVMtemplate'))]",
       "FormatDisksUrl": "[concat(variables('BaseURL'),variables('formatDiskstemplate'))]",
       "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),variables('configurePullTemplate'))]",
-      
-      "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
 
+      "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
+      
       "AzureAutomation": {
         "Url": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip",
         "RegistrationKey": "[parameters('PullServerRegistrationKey')]",
@@ -315,7 +305,7 @@
                       "value": "[parameters('DiskSize')]"
                   },
                   "numberOfInstances": {
-                      "value": "[parameters('numberOfInstances')]"
+                      "value": 1
                   },
                   "imagePublisher": {
                       "value": "[parameters('imagePublisher')]"
@@ -350,6 +340,9 @@
                 "localAdmins": {
                   "value": "[parameters('localAdmins')]"
                 },
+                "SQLAdmins": {
+                  "value": ""
+                },
                 "virtualNetwork": {
                   "value": "[parameters('virtualNetwork')]"
                   },
@@ -359,7 +352,7 @@
                 "subnetName": {
                       "value": "[parameters('subnetName')]"
                   },
-                  "ouPath": {
+                "ouPath": {
                       "value": "[parameters('ouPath')]"
                   }
               }
@@ -411,7 +404,7 @@
                   "vmName": {
                     "value": "[parameters('vmName')]"
                   },
-                  
+                 
                   "RegistrationKey": {
                     "value": "[variables('AzureAutomation').RegistrationKey]"
                   },
@@ -421,7 +414,6 @@
                   "nodeConfigurationName": {
                      "value": "[variables('AzureAutomation').nodeConfigurationName]"
                   },
-                  
                   "timestamp": {
                     "value":  "[variables('AzureAutomation').timestamp]"
                   }
