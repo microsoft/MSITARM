@@ -227,11 +227,11 @@
   },
   "variables": {
     "apiVersion": "2015-06-15",
-
+   
       "branch": "develop",
-      "folder":  "/301-single-vm-domain-join-build-dsc/",
-      "baseURL":  "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
-  
+      "folder": "/301-multi-vm-domain-join-build-dsc/",
+      "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
+    
     "DomainJoinzip": "scripts/DomainJoin.ps1.zip",
     "formatDiskszip": "scripts/FormatDataDisk.ps1.zip",
     "formatDiskstemplate": "nested/template-DataDisks.json",
@@ -353,7 +353,7 @@
             "contentVersion": "1.0.0.0"
              }, 
              "parameters": {
-               "vmName": { "value": "[parameters('vmName')]" },
+               "vmName": { "value": "[concat(parameters('vmName'),copyindex(1))]" },
                "diskCount": { "value": "[parameters('diskCount')]" },
                "diskCaching": { "value": "[variables('diskCaching')]" },
                "diskSizeGB": { "value": "[parameters('diskSize')]" },
@@ -483,7 +483,7 @@
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
-        "typeHandlerVersion": "2.8",
+        "typeHandlerVersion": "2.17",
         "settings": {
           "ModulesUrl": "[variables('modulesUrl')]",
           "SasToken": "",

@@ -58,9 +58,10 @@
     }
     },
   "variables": {
-
-    "branch": "develop",
-    "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),'/301-single-vm-domain-join-build-dsc/')]",
+    
+      "branch": "develop",
+      "folder": "/301-single-vm-domain-join-build-dsc/",
+      "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
 
     "configurationFunction": "FormatDataDisk.ps1\\FormatDataDisks",
     "formatDiskszip": "scripts/FormatDataDisk.ps1.zip",

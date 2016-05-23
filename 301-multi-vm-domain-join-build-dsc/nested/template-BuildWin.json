@@ -8,20 +8,6 @@
         "description": "Name of the existing VM to apply the DSC configuration to"
       }
     },
-    "modulesUrl": {
-      "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/Microsoft/MSITARM/master/301-multiple-vm-domain-join-build-dsc/scripts/Deploy-WinSever/Deploy-WinServer.ps1.zip",
-      "metadata": {
-        "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
-      }
-    },
-    "configurationFunction": {
-      "type": "string",
-      "defaultValue": "Deploy-WinServer.ps1\\DeployWinServer",
-      "metadata": {
-        "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
-      }
-    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_A2",
@@ -29,11 +15,11 @@
         "description": "Standard_A2"
       }
     },
-    "ServerRole": {
+    "DiskConfig": {
       "type": "string",
       "defaultValue": "Win",
       "metadata": {
-        "description": "IIS/SQL3,SQL4/Win"
+        "description": "IIS/SQLStd,SQLPrem/Win"
       }
     },
     "DiskCount": {
@@ -51,8 +37,15 @@
       }
     }
   },
-    "variables": {
+  "variables": {
+    
+      "branch": "develop",
+      "folder": "/301-multi-vm-domain-join-build-dsc/",
+      "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
 
+    "deployWinZip": "scripts/Deploy-WinServer.ps1.zip",
+    "configurationFunction": "Deploy-WinServer.ps1\\DeployWinServer",
+    "modulesUrl": "[concat(variables('BaseURL'),variables('deployWinZip'))]"
     },
     "resources": [
     {
@@ -67,9 +60,9 @@
             "autoUpgradeMinorVersion": true,
             "protectedSettings": {},
             "settings": {
-                "ModulesUrl": "[parameters('modulesUrl')]",
+                "ModulesUrl": "[variables('modulesUrl')]",
                 "SasToken": "",
-                "ConfigurationFunction": "[parameters('configurationFunction')]",
+                "ConfigurationFunction": "[variables('configurationFunction')]",
                 "Properties": []
             }
         }

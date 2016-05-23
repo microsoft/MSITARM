@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": ""
+    },
+    "localAdminUserName": {
+      "value": ""
+    },
+    "localAdminPassword": {
+      "value": ""
+    },
+    "domainJoinUserName": {
+      "value": ""
+    },
+    "domainJoinPassword": {
+      "value": ""
+    },
+    "localAdmins": {
+      "value": ""
+    },
+    "numberOfIIS": {
+      "value": 2
+    },
+    "numberOfSQL": {
+      "value": 2
+    },
+    "domainName": {
+      "value": ""
+    },
+    "env": {
+      "value": ""
+    },
+    "orgID": {
+      "value": ""
+    },
+     "appID": {
+      "value": ""
+    },
+    "snoozeDate": {
+      "value": ""
+    },
+    "virtualNetwork": {
+      "value": ""
+    },
+    "vnetResourceGroup": {
+      "value": ""
+    },
+    "userImageStorageAccountName": {
+      "value": ""
+    },
+    "storageAccountType": {
+      "value": "Standard_LRS"
+    },
+    "ouPath": {
+      "value": ""
+    }
+  }
+}
