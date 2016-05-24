@@ -246,46 +246,54 @@ Configuration DeploySQLServer
                         # Configure SQL Server Agent Service
                         ############################################
                         $sw.WriteLine("$(Get-Date -Format g) Configure SQL Server Agent Service....")
-                         
-                         $sqlInstances = gwmi win32_service -computerName localhost -ErrorAction SilentlyContinue | ? { $_.Name -match "SQLServerAgent*" -and $_.PathName -match "SQLAGENT.exe" } 
-                         if($sqlInstances.State -eq 'Stopped'){
-                            net start SQLSERVERAGENT
-                         }
+                         try {
 
-                        $db = New-Object Microsoft.SqlServer.Management.Smo.Database
-                        $db = $srv.Databases.Item("msdb")
-                        # Select SQLAgent 
-                        $SQLAgent = $db.parent.JobServer ;
+                             $sqlInstances = gwmi win32_service -computerName localhost -ErrorAction SilentlyContinue | ? { $_.Name -match "SQLServerAgent*" -and $_.PathName -match "SQLAGENT.exe" } 
+                             if($sqlInstances.State -eq 'Stopped'){
+                                net start SQLSERVERAGENT
+                             }
+
+                            $db = New-Object Microsoft.SqlServer.Management.Smo.Database
+                            $db = $srv.Databases.Item("msdb")
+                            # Select SQLAgent 
+                            $SQLAgent = $db.parent.JobServer ;
                      
-                        # Show settings
-                        $CurrentSettings = $SQLAgent | select @{n="SQLInstance";e={$db.parent.Name}},MaximumHistoryRows, MaximumJobHistoryRows ;
-                        $CurrentSettings | ft -AutoSize ;
-                        $TargetMaximumHistoryRows = 100000;
-                        $TargetMaximumJobHistoryRows = 1000 ;
+                            # Show settings
+                            $CurrentSettings = $SQLAgent | select @{n="SQLInstance";e={$db.parent.Name}},MaximumHistoryRows, MaximumJobHistoryRows ;
+                            $CurrentSettings | ft -AutoSize ;
+                            $TargetMaximumHistoryRows = 100000;
+                            $TargetMaximumJobHistoryRows = 1000 ;
 
-                        $SQLAgent.MaximumHistoryRows = $TargetMaximumHistoryRows ;
-                        $SQLAgent.MaximumJobHistoryRows = $TargetMaximumJobHistoryRows ; 
-                        $db.Parent.JobServer.SqlServerRestart=1
-                        $db.Parent.JobServer.SqlAgentRestart=1
-                        $SQLAgent.Alter();
+                            $SQLAgent.MaximumHistoryRows = $TargetMaximumHistoryRows ;
+                            $SQLAgent.MaximumJobHistoryRows = $TargetMaximumJobHistoryRows ; 
+                            $db.Parent.JobServer.SqlServerRestart=1
+                            $db.Parent.JobServer.SqlAgentRestart=1
+                            $SQLAgent.Alter();
                      
-                        # ensuring we have the latest information
-                        $SQLAgent.Refresh();
-                        $SQLAgent | select @{n="SQLInstance";e={$db.parent.Name}},MaximumHistoryRows, MaximumJobHistoryRows ;
-                        $db.Parent.ConnectionContext.Disconnect();
+                            # ensuring we have the latest information
+                            $SQLAgent.Refresh();
+                            $SQLAgent | select @{n="SQLInstance";e={$db.parent.Name}},MaximumHistoryRows, MaximumJobHistoryRows ;
+                            $db.Parent.ConnectionContext.Disconnect();
 
-                        CD HKLM:\
-                        $Registry_Key ="HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SQLSERVERAGENT\"
-                        Set-ItemProperty -Path $Registry_Key -Name Start  -Value 2 
-                        CD C:\
-                                                                       
+                            CD HKLM:\
+                            $Registry_Key ="HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SQLSERVERAGENT\"
+                            Set-ItemProperty -Path $Registry_Key -Name Start  -Value 2 
+                            CD C:\
+                        }catch{
+                            [string]$errorMessage = $Error[0].Exception
+		                    $sw.WriteLine("$(Get-Date -Format g) An error occurred: $($errorMessage)")
+                        }                                            
                         
                         ############################################
                         # Configure Master, Model and MSDB DBs 
                         ############################################
                         $sw.WriteLine("$(Get-Date -Format g) Configure Master, Model and MSDB DBs ")
-                        INVOKE-sqlcmd  -Database model -Query "Alter database [model] set recovery simple with no_wait"
-
+                         try{
+                            INVOKE-sqlcmd  -Database model -Query "Alter database [model] set recovery simple with no_wait"
+                         }catch{
+                            [string]$errorMessage = $Error[0].Exception
+		                    $sw.WriteLine("$(Get-Date -Format g) An error occurred: $($errorMessage)")
+                        }
                         try{
                             INVOKE-sqlcmd  -Database master -Query "Alter database [master] modify file (Name = [master], Size = 50 MB)"
                         }catch{
@@ -357,23 +365,30 @@ Configuration DeploySQLServer
                          }catch{
                             [string]$errorMessage = $Error[0].Exception
 		                    $sw.WriteLine("$(Get-Date -Format g) An error occurred: $($errorMessage)")
-                        }
+                         }
                         ############################################
                         # Set BUILTIN Administrators group = Removed
                         ############################################
                         $sw.WriteLine("$(Get-Date -Format g) Set BUILTIN Administrators group = Removed")
 
-                        
-                        $q = "if Exists(select 1 from sys.syslogins where name='[BUILTIN\Administrators]') drop login [BUILTIN\Administrators]"
-				        Invoke-Sqlcmd -Database master -Query $q
-
+                        try {
+                            $q = "if Exists(select 1 from sys.syslogins where name='[BUILTIN\Administrators]') drop login [BUILTIN\Administrators]"
+				            Invoke-Sqlcmd -Database master -Query $q
+                         }catch{
+                            [string]$errorMessage = $Error[0].Exception
+		                    $sw.WriteLine("$(Get-Date -Format g) An error occurred: $($errorMessage)")
+                         }
 
                         ############################################
                         # Configure Auditing
                         ############################################
                         $sw.WriteLine("$(Get-Date -Format g) Configure Auditing")
-                        INVOKE-sqlcmd  -Database master -Query "Exec [master].[sys].[xp_instance_regwrite] N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'NumErrorLogs', REG_DWORD, 30"
-
+                        try{
+                            INVOKE-sqlcmd  -Database master -Query "Exec [master].[sys].[xp_instance_regwrite] N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'NumErrorLogs', REG_DWORD, 30"
+                         }catch{
+                            [string]$errorMessage = $Error[0].Exception
+		                    $sw.WriteLine("$(Get-Date -Format g) An error occurred: $($errorMessage)")
+                         }
                         ############################################
                         # Configure TCP ports 
                         ############################################
@@ -508,8 +523,8 @@ Configuration DeploySQLServer
                                 do {
                                     try{
                                     
-                                    $q = "IF NOT EXISTS(SELECT 1 FROM tempdb.dbo.sysfiles WHERE name = 'tempdev$($i)') Begin ALTER DATABASE [tempdb] ADD FILE ( NAME = tempdev$($i), SIZE = $($fileSize)MB, MAXSIZE = $($maxFileGrowthSizeMB)MB, FILEGROWTH = $($fileGrowthMB)MB, FILENAME = '$($TempPath)\tempdb$($i).mdf') END "; 
-		                            Invoke-Sqlcmd -Database master -Query $q
+                                        $q = "IF NOT EXISTS(SELECT 1 FROM tempdb.dbo.sysfiles WHERE name = 'tempdev$($i)') Begin ALTER DATABASE [tempdb] ADD FILE ( NAME = tempdev$($i), SIZE = $($fileSize)MB, MAXSIZE = $($maxFileGrowthSizeMB)MB, FILEGROWTH = $($fileGrowthMB)MB, FILENAME = '$($TempPath)\tempdb$($i).mdf') END "; 
+		                                Invoke-Sqlcmd -Database master -Query $q
                                     
                                     }catch{
                                         [string]$errorMessage = $Error[0].Exception
