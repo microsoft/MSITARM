@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": ""
+    },
+    "localAdminUserName": {
+      "value": ""
+    },
+    "localAdminPassword": {
+      "value": ""
+    },
+    "domainJoinUserName": {
+      "value": ""
+    },
+    "domainJoinPassword": {
+      "value": ""
+    },
+    "SQLAdmins": {
+      "value": ""
+    },
+   "localAdmins": {
+      "value": ""
+    },
+    "appID": {
+      "value": ""
+    },
+    "orgID": {
+      "value": ""
+    },
+    "domainName": {
+      "value": ""
+    },
+    "env": {
+      "value": ""
+    },
+    "imagePublisher": {
+      "value": ""
+    },
+    "imageOffer": {
+      "value": ""
+    },
+    "sku": {
+      "value": ""
+    },
+    "snoozeDate": {
+      "value": ""
+    },
+    "storageAccountType": {
+      "value": ""
+    },
+    "userImageStorageAccountName": {
+      "value": ""
+    },
+    "numberOfInstances": {
+      "value": 1
+    },
+    "virtualNetwork": {
+      "value": ""
+    },
+    "vnetResourceGroup": {
+      "value": ""
+    },
+    "subnetName": {
+      "value": ""
+    },
+    "vmSize": {
+      "value": ""
+    },
+    "Diskconfig": {
+      "value": "Win"
+    },
+    "DiskSize": {
+      "value": "200"
+    },
+    "DiskCount": {
+      "value": "1"
+    },
+    "ouPath": {
+      "value": ""
+    }
+  }
+}
