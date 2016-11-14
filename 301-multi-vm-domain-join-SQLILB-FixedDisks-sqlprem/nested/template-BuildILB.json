@@ -1,0 +1,124 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VM to apply the DSC configuration to"
+      }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "Description": "Number of Azure VM to create."
+      }
+    },
+    "DomainName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name Domain"
+      }
+    },
+    "AOAGListenerName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the Listener."
+      }
+    },
+    "AOAGName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the AvailabilityGroup."
+      }
+    },
+    "FailoverClusterName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the FailoverCluster."
+      }
+    },
+    "LoadBalancerName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the LoadBalancer."
+      }
+    },
+     "ILBUriKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The ILB RunBook server URI key"
+      }
+    },
+    "ILBSubId": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The ILB Subscription"
+      }
+    },
+    "ILBResourceGroup": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The ILB Runbook ResourceGroup"
+      }
+    },
+    "ILBAccount": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The ILB Runbook ResourceGroup"
+      }
+    },
+    "DashboardURL": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The Dashboard URL"
+      }
+    }
+  },
+  "variables": {
+
+    "branch": "develop",
+    "folder": "/301-multi-vm-domain-join-SQLILB-FixedDisks-sqlprem/",
+    "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
+
+    "vmILBExtensionName": "ConfigureILB",
+    "customILBScriptFileToRun": "Configure-ILB.ps1",
+    "customILBScriptFileUri": "[concat(variables('baseURL'),'scripts/',variables('customILBScriptFileToRun'))]",
+    "ILBarguments": "[concat(' -AOAGListenerName ', parameters('AOAGListenerName'),' -LoadBalancerName ',parameters('LoadBalancerName'), ' -AOAGName ', parameters('AOAGName'), ' -ServernamePart ', parameters('vmname'), ' -InstanceCount ', parameters('numberOfInstances'),' -Domain ', parameters('DomainName'), ' -FailoverClusterName ', parameters('FailoverClusterName'), ' -SubscriptionId ',subscription().subscriptionId,' -SecretUrikey ', parameters('ILBUriKey'), ' -SecretSubid ',parameters('ILBSubID'),' -SecretRG ',parameters('ILBResourceGroup'),' -SecretAcct ',parameters('ILBAccount'),' -dashboardurl ', parameters('dashboardurl'))]",
+    "ILBcommandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File', ' ', variables('customILBScriptFileToRun'), ' ', variables('ILBarguments'))]"
+
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-05-01-preview",
+      "name": "[concat(parameters('vmName'),'1','/', variables('vmILBExtensionName'))]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.7",
+        "autoUpgradeMinorVersion": "true",
+        "forceUpdateTag": "v.1.4",
+        "settings": {
+          "fileUris": [
+            "[variables('customILBScriptFileUri')]"
+          ]          
+        },
+        "protectedSettings": {
+          "commandToExecute": "[variables('ILBcommandToExecute')]"
+        }
+      }
+    }
+  ]
+}
+

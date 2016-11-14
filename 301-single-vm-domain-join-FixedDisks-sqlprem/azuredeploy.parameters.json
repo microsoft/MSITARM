@@ -1,0 +1,111 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": ""
+    },
+    "localAdminUserName": {
+      "value": ""
+    },
+    "localAdminPassword": {
+      "value": ""
+    },
+    "domainJoinUserName": {
+      "value": ""
+    },
+    "domainJoinPassword": {
+      "value": ""
+    },
+    "SQLServerAccount": {
+      "value": ""
+    },
+    "SQLServerPassword": {
+      "value": ""
+    },
+    "SQLAgentAccount": {
+      "value": ""
+    },
+    "SQLAgentPassword": {
+      "value": ""
+    },
+    "localAdmins": {
+      "value": ""
+    },
+    "SQLAdmins": {
+      "value": ""
+    },
+    "CiOwner": {
+      "value": ""
+    },
+    "CiAnalystGroup": {
+      "value": ""
+    },
+    "appID": {
+      "value": ""
+    },
+    "orgID": {
+      "value": ""
+    },
+    "domainName": {
+      "value": ""
+    },
+    "env": {
+      "value": ""
+    },
+    "imagePublisher": {
+      "value": ""
+    },
+    "imageOffer": {
+      "value": ""
+    },
+    "sku": {
+      "value": ""
+    },
+    "storageAccountType": {
+      "value": ""
+    },
+    "userImageStorageAccountName": {
+      "value": ""
+    },
+    "virtualNetwork": {
+      "value": ""
+    },
+    "vnetResourceGroup": {
+      "value": ""
+    },
+    "subnetName": {
+      "value": ""
+    },
+    "vmSize": {
+      "value": ""
+    },
+    "H_DriveSize": {
+      "value": "500"
+    },
+    "H_DriveCache": {
+      "value": "true"
+    },
+    "O_DriveSize": {
+      "value": "200"
+    },
+    "O_DriveCache": {
+      "value": "true"
+    },
+    "T_DriveSize": {
+      "value": "400"
+    },
+    "T_DriveCache": {
+      "value": "false"
+    },
+    "E_DriveSize": {
+      "value": "400"
+    },
+    "E_DriveCache": {
+      "value": "false"
+    },
+    "ouPath": {
+      "value": ""
+    }
+  }
+}

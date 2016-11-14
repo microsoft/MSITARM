@@ -12,8 +12,10 @@
       "type": "string",
       "defaultValue": "Standard_A2"
     },
-    "H_DriveSize": {
-      "type": "string",
+      "H_DriveSize": {
+      "type": "int",
+      "minValue": 10,
+      "maxValue": 1024,
       "metadata": {
         "description": "The size in GB for the H drive."
       }
@@ -25,7 +27,9 @@
       }
     },
     "O_DriveSize": {
-      "type": "string",
+      "type": "int",
+      "minValue": 10,
+      "maxValue": 1024,
       "metadata": {
         "description": "The size in GB for the O drive."
       }
@@ -37,7 +41,9 @@
       }
     },
     "T_DriveSize": {
-      "type": "string",
+      "type": "int",
+      "minValue": 10,
+      "maxValue": 1024,
       "metadata": {
         "description": "The size in GB for the T drive."
       }
@@ -49,9 +55,11 @@
       }
     },
     "E_DriveSize": {
-      "type": "string",
+      "type": "int",
+      "minValue": 10,
+      "maxValue": 1024,
       "metadata": {
-        "description": "The size in GB for the T drive."
+        "description": "The size in GB for the E drive."
       }
     },
     "E_DriveCache": {
@@ -111,6 +119,7 @@
 
     "deploySQLServerZip": "scripts/Deploy-SQLServer.ps1.zip",
     "configurationFunction": "Deploy-SQLServer.ps1\\DeploySQLServer",
+
     "modulesUrl": "[concat(variables('BaseURL'),variables('deploySQLServerZip'))]",
 
     "diskCaching": "None",
@@ -147,7 +156,6 @@
       },
       "vmDiskTemplate": "[concat(variables('BaseURL'), 'nested/DiskArray.json')]"
     },
-
     "DiskSKU": "[variables(concat('SQLPrem','Disk'))]"
   },
     "resources": [

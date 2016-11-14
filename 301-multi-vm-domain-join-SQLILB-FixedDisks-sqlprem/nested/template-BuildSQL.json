@@ -13,7 +13,7 @@
       "defaultValue": "Standard_A2"
     },
     "H_DriveSize": {
-      "type": "string",
+      "type": "int",
       "metadata": {
         "description": "The size in GB for the H drive."
       }
@@ -25,7 +25,7 @@
       }
     },
     "O_DriveSize": {
-      "type": "string",
+      "type": "int",
       "metadata": {
         "description": "The size in GB for the O drive."
       }
@@ -37,7 +37,7 @@
       }
     },
     "T_DriveSize": {
-      "type": "string",
+      "type": "int",
       "metadata": {
         "description": "The size in GB for the T drive."
       }
@@ -49,7 +49,7 @@
       }
     },
     "E_DriveSize": {
-      "type": "string",
+      "type": "int",
       "metadata": {
         "description": "The size in GB for the T drive."
       }
@@ -106,7 +106,7 @@
   "variables": {
 
     "branch": "develop",
-    "folder": "/301-single-vm-domain-join-FixedDisks-sqlprem/",
+    "folder": "/301-multi-vm-domain-join-SQLILB-FixedDisks-sqlprem/",
     "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
 
     "deploySQLServerZip": "scripts/Deploy-SQLServer.ps1.zip",
