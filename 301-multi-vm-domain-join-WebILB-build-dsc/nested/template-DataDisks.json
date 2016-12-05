@@ -155,7 +155,7 @@
     "resources": [
     {
         "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
+        "name": "[concat(parameters('vmName'),'/BuildVM')]",
         "apiVersion": "2015-06-15",
         "location": "[resourceGroup().location]",
         "properties": {
