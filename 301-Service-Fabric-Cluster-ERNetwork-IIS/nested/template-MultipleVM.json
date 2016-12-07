@@ -162,6 +162,22 @@
         "description": "The FQDN of the AD domain"
       }
     },
+    "CiOwner": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "",
+      "metadata": {
+        "description": "CiOwner tag for the Virtual Machine."
+      }
+    },
+    "CiAnalystGroup": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "",
+      "metadata": {
+        "description": "CiAnalystGroup tag for the Virtual Machine."
+      }
+    },
     "appID": {
       "type": "string",
       "minLength": 1,
@@ -501,6 +517,8 @@
         "appID": "[parameters('appID')]",
         "orgID": "[parameters('orgID')]",
         "env": "[parameters('env')]",
+        "CiOwner": "[parameters('CiOwner')]",
+        "CiAnalystGroup": "[parameters('CiAnalystGroup')]",
         "snoozeDate": "[parameters('snoozeDate')]"
       },
       "copy": {

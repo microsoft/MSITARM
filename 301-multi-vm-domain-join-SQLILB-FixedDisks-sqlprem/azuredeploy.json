@@ -394,7 +394,7 @@
     "CreateVMUrl": "[concat(variables('BaseURL'),variables('createVMtemplate'))]",
     "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),variables('configurePullTemplate'))]",
 
-    "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
+    "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'),'-FixedDisks', '.json')]",
     "BuildILBCluster": "[concat(variables('BaseURL'),'nested/template-BuildILB.json')]",
 
     "vaultname": "[parameters('vaultname')]",
@@ -530,7 +530,7 @@
     },
     {
       "apiVersion": "2015-01-01",
-      "name": "[concat(parameters('vmName'),copyindex(1),'-BuildMachineRole-',variables('Role'))]",
+      "name": "[concat(parameters('vmName'),copyindex(1),'-BuildMachineRole-',variables('Role'),'-FixedDisks')]",
       "type": "Microsoft.Resources/deployments",
       "copy": {
         "name": "BuildMachineRoleLoop",

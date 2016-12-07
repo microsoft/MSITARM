@@ -41,9 +41,6 @@
     "orgID": {
       "value": ""
     },
-    "vmStorageAccountName0": {
-      "value": ""
-    },
 
     "nt0applicationStartPort": {
       "value": 20000
@@ -63,7 +60,24 @@
     "nt0fabricHttpGatewayPort": {
       "value": 19080
     },
-
+    "nt1applicationStartPort": {
+      "value": 30000
+    },
+    "nt1applicationEndPort": {
+      "value": 40000
+    },
+    "nt1ephemeralStartPort": {
+      "value": 49152
+    },
+    "nt1ephemeralEndPort": {
+      "value": 65534
+    },
+    "nt1fabricTcpGatewayPort": {
+      "value": 19000
+    },
+    "nt1fabricHttpGatewayPort": {
+      "value": 19080
+    },
     "publicIPAddressName": {
       "value": "PublicIP-VM"
     },
@@ -82,9 +96,7 @@
     "subnetName": {
       "value": "Subnet-1"
     },
-    "subnetPrefix": {
-      "value": ""
-    },
+
     "dnsName": {
       "value": ""
     },
@@ -124,16 +136,6 @@
     "loadBalancedwrkPort4": {
       "value": 8080
     },
-    "storageAccountType0": {
-      "value": "Standard_LRS"
-    },
-    "supportLogStorageAccountType": {
-      "value": "Standard_LRS"
-    },
-
-    "applicationDiagnosticsStorageAccountType": {
-      "value": "Standard_LRS"
-    },
     "vmNodeType0Name": {
       "value": "FrontEnd"
     },
@@ -141,6 +143,15 @@
       "value": "Standard_D2"
     },
     "vmNodeType0Count": {
+      "value": 5
+    },
+    "vmNodeType2Name": {
+      "value": "Worker"
+    },
+    "vmNodeType2Size": {
+      "value": "Standard_D4"
+    },
+    "vmNodeType1Count": {
       "value": 5
     },
     "certificateThumbprint": {
@@ -154,7 +165,9 @@
     },
     "sourceVaultSecret": {
       "value": ""
+    },
+    "sourceVaultSecret2": {
+      "value": ""
     }
-
   }
 }
