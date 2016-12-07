@@ -328,7 +328,7 @@
     "CreateVMUrl": "[concat(variables('BaseURL'),variables('createVMtemplate'))]",
     "AttachVMtoPullServerURL": "[concat(variables('BaseURL'),variables('configurePullTemplate'))]",
 
-    "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'), '.json')]",
+    "BuildMachineRoleURL": "[concat(variables('BaseURL'),'nested/template-Build',variables('Role'),'-FixedDisks', '.json')]",
 
     "AzureAutomation": {
       "Url": "https://github.com/Azure/azure-quickstart-templates/raw/master/dsc-extension-azure-automation-pullserver/UpdateLCMforAAPull.zip",
