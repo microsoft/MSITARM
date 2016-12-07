@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VM to apply the DSC configuration to"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_A2",
+      "metadata": {
+        "description": "Standard_A2"
+      }
+    },
+    "DiskConfig": {
+      "type": "string",
+      "defaultValue": "Win",
+      "metadata": {
+        "description": "IIS/SQLPrem,SQLStd/Win"
+      }
+    },
+     "DiskCount": {
+        "type": "string",
+        "allowedValues": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16"
+        ],
+        "defaultValue": "2",
+        "metadata": {
+          "description": "Number of Disks for vm."
+        }
+      },
+     "DiskSize": {
+        "type": "int",
+        "defaultValue": 200,
+        "minValue": 10,
+        "maxValue": 1024,
+        "metadata": {
+          "Description": "Azure VM size of the VM"
+        }
+      }
+    },
+  "variables": {
+
+    "branch": "develop",
+    "folder": "/301-multi-vm-domain-join-SQLILB-build-dsc/",
+    "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
+
+    "IISDeployzip": "scripts/Deploy-WebServer.ps1.zip",
+
+    "configurationFunction": "Deploy-WebServer.ps1\\DeployWebServer",
+    "modulesUrl": "[concat(variables('BaseURL'),variables('IISDeployzip'))]"
+  },
+    "resources": [
+    {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('vmName'),'/Microsoft.Powershell.DSC')]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.18",
+            "autoUpgradeMinorVersion": true,
+            "protectedSettings": {},
+            "settings": {
+                "ModulesUrl": "[variables('modulesUrl')]",
+                "SasToken": "",
+                "ConfigurationFunction": "[variables('configurationFunction')]",
+                "Properties": []
+            }
+        }
+    }]
+}
+

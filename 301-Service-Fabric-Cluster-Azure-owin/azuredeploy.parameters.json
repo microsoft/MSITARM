@@ -5,28 +5,16 @@
     "clusterName": {
       "value": ""
     },
-    "VMScaleSetName": {
-      "value": ""
-    },
     "localAdminUserName": {
       "value": ""
     },
     "localAdminPassword": {
       "value": ""
     },
-    "domainJoinUserName": {
-      "value": ""
-    },
-    "domainJoinPassword": {
-      "value": ""
-    },
     "localAdmins": {
       "value": ""
     },
-    "domainName": {
-      "value": ""
-    },
-    "OuPath": {
+    "DNSName": {
       "value": ""
     },
     "CiOwner": {
@@ -41,10 +29,9 @@
     "orgID": {
       "value": ""
     },
-    "vmStorageAccountName0": {
+    "vmStorageAccountName": {
       "value": ""
     },
-
     "nt0applicationStartPort": {
       "value": 20000
     },
@@ -63,7 +50,24 @@
     "nt0fabricHttpGatewayPort": {
       "value": 19080
     },
-
+    "nt1applicationStartPort": {
+      "value": 30000
+    },
+    "nt1applicationEndPort": {
+      "value": 40000
+    },
+    "nt1ephemeralStartPort": {
+      "value": 49152
+    },
+    "nt1ephemeralEndPort": {
+      "value": 65534
+    },
+    "nt1fabricTcpGatewayPort": {
+      "value": 19000
+    },
+    "nt1fabricHttpGatewayPort": {
+      "value": 19080
+    },
     "publicIPAddressName": {
       "value": "PublicIP-VM"
     },
@@ -73,24 +77,7 @@
     "vmStorageAccountContainerName": {
       "value": "vhds"
     },
-    "virtualNetwork": {
-      "value": ""
-    },
-    "vnetResourceGroup": {
-      "value": ""
-    },
-    "subnetName": {
-      "value": "Subnet-1"
-    },
-    "subnetPrefix": {
-      "value": ""
-    },
-    "dnsName": {
-      "value": ""
-    },
-    "nicName": {
-      "value": ""
-    },
+
     "lbName": {
       "value": "Loadbalancer"
     },
@@ -124,7 +111,7 @@
     "loadBalancedwrkPort4": {
       "value": 8080
     },
-    "storageAccountType0": {
+    "storageAccountType": {
       "value": "Standard_LRS"
     },
     "supportLogStorageAccountType": {
@@ -135,12 +122,21 @@
       "value": "Standard_LRS"
     },
     "vmNodeType0Name": {
-      "value": "FrontEnd"
+      "value": "APINode"
     },
     "vmNodeType0Size": {
       "value": "Standard_D2"
     },
     "vmNodeType0Count": {
+      "value": 5
+    },
+    "vmNodeType2Name": {
+      "value": "ActorNode"
+    },
+    "vmNodeType2Size": {
+      "value": "Standard_D4"
+    },
+    "vmNodeType1Count": {
       "value": 5
     },
     "certificateThumbprint": {
@@ -154,7 +150,9 @@
     },
     "sourceVaultSecret": {
       "value": ""
+    },
+    "sourceVaultSecret2": {
+      "value": ""
     }
-
   }
 }

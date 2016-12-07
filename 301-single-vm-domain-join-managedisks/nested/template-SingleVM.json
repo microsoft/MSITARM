@@ -355,8 +355,7 @@
         "displayName": "NetworkInterface",
         "appID": "[parameters('appID')]",
         "orgID": "[parameters('orgID')]",
-        "env": "[parameters('env')]",
-        "snoozeDate": "[parameters('snoozeDate')]"
+        "env": "[parameters('env')]"
       },
       "properties": {
         "ipConfigurations": [

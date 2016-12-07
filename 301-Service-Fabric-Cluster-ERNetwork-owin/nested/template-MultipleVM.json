@@ -514,11 +514,11 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "VirtualMachine",
+        "CiOwner": "[parameters('CiOwner')]",
+        "CiAnalystGroup": "[parameters('CiAnalystGroup')]",
         "appID": "[parameters('appID')]",
         "orgID": "[parameters('orgID')]",
         "env": "[parameters('env')]",
-        "CiOwner": "[parameters('CiOwner')]",
-        "CiAnalystGroup": "[parameters('CiAnalystGroup')]",
         "snoozeDate": "[parameters('snoozeDate')]"
       },
       "copy": {

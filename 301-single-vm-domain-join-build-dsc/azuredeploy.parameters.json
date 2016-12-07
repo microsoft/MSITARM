@@ -17,10 +17,7 @@
     "domainJoinPassword": {
       "value": ""
     },
-    "numberOfInstances": {
-      "value": "1"
-    },
-    "localAdmins": {
+     "localAdmins": {
       "value": ""
     },
     "CiOwner": {
