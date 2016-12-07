@@ -286,7 +286,7 @@
       "[concat('3', parameters('vmStorageAccountName0'))]",
       "[concat('4', parameters('vmStorageAccountName0'))]"
     ],
-    "vmExtensionName": "Microsoft.Powershell.DSC",
+    "vmExtensionName": "BuildVM",
     "DomainJoinzip": "scripts/DomainJoinSFC.ps1.zip",
     "DomainJoinModule": "[concat(variables('BaseURL'),variables('DomainJoinzip'))]"
 
