@@ -269,7 +269,7 @@
     "supportLogStorageAccountName": "[toLower( concat('sflogs', uniqueString(resourceGroup().id),'2'))]",
     "applicationDiagnosticsStorageAccountName": "[toLower(concat(uniqueString(resourceGroup().id), '3' ))]",
 
-    "branch": "develop",
+     "branch": "beta",
     "folder": "/301-Service-Fabric-Cluster-ERNetwork/",
     "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
 

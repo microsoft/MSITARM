@@ -77,7 +77,7 @@
   },
   "variables": {
 
-    "branch": "develop",
+     "branch": "beta",
     "folder": "/301-multi-vm-domain-join-WebILB-build-dsc/",
     "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
 

@@ -244,7 +244,7 @@
   "variables": {
     "apiVersion": "2015-06-15",
 
-    "branch": "develop",
+     "branch": "beta",
     "folder": "/301-single-vm-domain-join-FixedDisks-sqlprem/",
     "baseURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),variables('folder'))]",
 
