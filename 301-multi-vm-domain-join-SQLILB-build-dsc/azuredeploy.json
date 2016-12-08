@@ -442,6 +442,12 @@
           "orgID": {
             "value": "[parameters('orgID')]"
           },
+          "CiOwner": {
+            "value": "[parameters('CiOwner')]"
+          },
+          "CiAnalystGroup": {
+            "value": "[parameters('CiAnalystGroup')]"
+          },
           "env": {
             "value": "[parameters('env')]"
           },
