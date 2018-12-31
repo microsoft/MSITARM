@@ -1,0 +1,27 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Status": {
+      "type": "string",
+      "defaultValue": "success",
+      "allowedValues": [
+        "failure"
+      ],
+      "minLength": 1,
+      "metadata": {
+        "description": "Local admin Username for the Virtual Machine."
+      }
+    },
+    "TelemetryTrackerID": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": []
+}

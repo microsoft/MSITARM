@@ -1,0 +1,106 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string"
+    },
+    "VaultName": {
+      "type": "string"
+    },
+    "AzureDiskEncryption": {
+      "type": "string"
+    },
+    "UseExistingKek": {
+      "type": "string"
+    },
+    "KeyEncryptionKeyURL": {
+      "type": "string"
+    },
+
+    "sequenceVersion": {
+      "type": "string",
+      "defaultValue": "1.0",
+      "metadata": {
+        "description": "Pass in an unique value like a GUID everytime the operation needs to be force run"
+      }
+    }
+  },
+  "variables": {
+    "vmssApiVersion": "2016-04-30-preview",
+    "lbApiVersion": "2015-06-15",
+    "vNetApiVersion": "2015-06-15",
+    "storageApiVersion": "2016-01-01",
+    "publicIPApiVersion": "2015-06-15",
+    "deployApiVersion": "2016-02-01",
+    "apiVersion": "2015-06-15",
+    "MSITVersion": "2.1.2",
+
+    "vmVaultName": "[concat(parameters('VaultName'),'vault')]",
+    "keyVaultURL": "[concat('https://', variables('vmVaultName'), '.vault.azure.net/')]",
+    "delimiters": [ "/" ],
+    "ScriptTemplateUri": "https://cptmanagedscriptlibrary.azurewebsites.net/api/GetVirtualMachineAAD?code=uF/WvLRUAGPv0tRVsclluoQMnl2CCK2hj9qBFvKVydQEf1PhwUV3bw==",
+    "DiskEncryptionUrl": "[uri(deployment().properties.templateLink.uri, 'template-DiskEncryption.json')]",
+
+    "AzureDiskEncryptionExt": "AzureDiskEncryption",
+    "AzureDiskEncryptionURL": "[uri(deployment().properties.templateLink.uri, concat('updatevm-azureencryptionkey',parameters('UseExistingKek'),'.json'))]",
+    "extensionVersion": "1.1",
+    "encryptionOperation": "EnableEncryption",
+    "keyEncryptionAlgorithm": "RSA-OAEP"
+
+  },
+  "resources": [
+    {
+      "apiVersion": "[variables('deployApiVersion')]",
+      "name": "[concat(parameters('vmName'),'-DiskEncryption')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('DiskEncryptionUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "vaultName": {
+            "value": "[parameters('vmName')]"
+          },
+          "AzureDiskEncryption": {
+            "value": "[parameters('AzureDiskEncryption')]"
+          },
+          "UseExistingKek": {
+            "value": "[parameters('UseExistingKek')]"
+          },
+          "keyEncryptionKeyURL": {
+            "value": "[parameters('KeyEncryptionKeyURL')]"
+          },
+          "clientid": {
+            "reference": {
+              "keyVault": {
+                "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/', parameters('vaultName'))]"
+              },
+              "secretName": "clientid"
+            }
+          },
+          "clientsecret": {
+            "reference": {
+              "keyVault": {
+                "id": "[concat(resourceGroup().id, '/providers/Microsoft.KeyVault/vaults/', parameters('vaultName'))]"
+              },
+              "secretName": "clientsecret"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+
+  }
+}

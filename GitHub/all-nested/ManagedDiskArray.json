@@ -1,0 +1,888 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "defaultValue": "vmname",
+      "minLength": 1,
+      "metadata": {
+        "description": "vmName for the Virtual Machine."
+      }
+    },
+    "DiskCount": {
+      "type": "string",
+      "allowedValues": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16"
+      ],
+      "defaultValue": "0",
+      "metadata": {
+        "description": "Number of Disks for vm."
+      }
+    },
+    "diskCaching": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "ReadOnly",
+        "ReadWrite"
+      ],
+      "metadata": {
+        "description": "Caching type for the data disks"
+      }
+    },
+    "DiskSizeGB": {
+      "type": "int",
+      "defaultValue": 200,
+      "maxValue": 4096,
+      "metadata": {
+        "Description": "Azure VM size of the VM"
+      }
+    },
+    "StorageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Premium_LRS"
+      ],
+      "metadata": {
+        "description": "Storage performance, Standard_LRS for standard skus and Premium_LRS for premium skus"
+      }
+    }
+  },
+  "variables": {
+    "vmStorageAccountContainerName": "vhds",
+    "disksArray": {
+      "0":  "[variables('dataDisks')['0']]",
+      "1": "[variables('dataDisks')['1']]",
+      "2": "[concat(variables('dataDisks')['1'], variables('dataDisks')['2'])]",
+      "3": "[concat(variables('dataDisks')['1'], variables('dataDisks')['2'], variables('dataDisks')['3'])]",
+      "4": "[variables('diskDeltas')['4delta']]",
+      "5": "[concat(variables('diskDeltas')['4delta'], variables('dataDisks')['5'])]",
+      "6": "[concat(variables('diskDeltas')['4delta'], variables('dataDisks')['5'], variables('dataDisks')['6'])]",
+      "7": "[concat(variables('diskDeltas')['4delta'], variables('dataDisks')['5'], variables('dataDisks')['6'], variables('dataDisks')['7'])]",
+      "8": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'])]",
+      "9": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('dataDisks')['9'])]",
+      "10": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('dataDisks')['9'], variables('dataDisks')['10'])]",
+      "11": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('dataDisks')['9'], variables('dataDisks')['10'], variables('dataDisks')['11'])]",
+      "12": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'])]",
+      "13": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'], variables('dataDisks')['13'])]",
+      "14": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'], variables('dataDisks')['13'], variables('dataDisks')['14'])]",
+      "15": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'], variables('dataDisks')['13'], variables('dataDisks')['14'], variables('dataDisks')['15'])]",
+      "16": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'], variables('diskDeltas')['16delta'])]",
+      "32": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'], variables('diskDeltas')['16delta'], variables('diskDeltas')['32delta'])]",
+      "64": "[concat(variables('diskDeltas')['4delta'], variables('diskDeltas')['8delta'], variables('diskDeltas')['12delta'], variables('diskDeltas')['16delta'], variables('diskDeltas')['32delta'], variables('diskDeltas')['64delta'])]"
+    },
+    "diskDeltas": {
+      "4delta": [
+        "[variables('dataDisks')['1'][0]]",
+        "[variables('dataDisks')['2'][0]]",
+        "[variables('dataDisks')['3'][0]]",
+        "[variables('dataDisks')['4'][0]]"
+      ],
+      "8delta": [
+        "[variables('dataDisks')['5'][0]]",
+        "[variables('dataDisks')['6'][0]]",
+        "[variables('dataDisks')['7'][0]]",
+        "[variables('dataDisks')['8'][0]]"
+      ],
+      "12delta": [
+        "[variables('dataDisks')['9'][0]]",
+        "[variables('dataDisks')['10'][0]]",
+        "[variables('dataDisks')['11'][0]]",
+        "[variables('dataDisks')['12'][0]]"
+      ],
+      "16delta": [
+        "[variables('dataDisks')['13'][0]]",
+        "[variables('dataDisks')['14'][0]]",
+        "[variables('dataDisks')['15'][0]]",
+        "[variables('dataDisks')['16'][0]]"
+      ],
+      "32delta": [
+        "[variables('dataDisks')['17'][0]]",
+        "[variables('dataDisks')['18'][0]]",
+        "[variables('dataDisks')['19'][0]]",
+        "[variables('dataDisks')['20'][0]]",
+        "[variables('dataDisks')['21'][0]]",
+        "[variables('dataDisks')['22'][0]]",
+        "[variables('dataDisks')['23'][0]]",
+        "[variables('dataDisks')['24'][0]]",
+        "[variables('dataDisks')['25'][0]]",
+        "[variables('dataDisks')['26'][0]]",
+        "[variables('dataDisks')['27'][0]]",
+        "[variables('dataDisks')['28'][0]]",
+        "[variables('dataDisks')['29'][0]]",
+        "[variables('dataDisks')['30'][0]]",
+        "[variables('dataDisks')['31'][0]]",
+        "[variables('dataDisks')['32'][0]]"
+      ],
+      "64delta": [
+        "[variables('dataDisks')['33'][0]]",
+        "[variables('dataDisks')['34'][0]]",
+        "[variables('dataDisks')['35'][0]]",
+        "[variables('dataDisks')['36'][0]]",
+        "[variables('dataDisks')['37'][0]]",
+        "[variables('dataDisks')['38'][0]]",
+        "[variables('dataDisks')['39'][0]]",
+        "[variables('dataDisks')['40'][0]]",
+        "[variables('dataDisks')['41'][0]]",
+        "[variables('dataDisks')['42'][0]]",
+        "[variables('dataDisks')['43'][0]]",
+        "[variables('dataDisks')['44'][0]]",
+        "[variables('dataDisks')['45'][0]]",
+        "[variables('dataDisks')['46'][0]]",
+        "[variables('dataDisks')['47'][0]]",
+        "[variables('dataDisks')['48'][0]]",
+        "[variables('dataDisks')['49'][0]]",
+        "[variables('dataDisks')['50'][0]]",
+        "[variables('dataDisks')['51'][0]]",
+        "[variables('dataDisks')['52'][0]]",
+        "[variables('dataDisks')['53'][0]]",
+        "[variables('dataDisks')['54'][0]]",
+        "[variables('dataDisks')['55'][0]]",
+        "[variables('dataDisks')['56'][0]]",
+        "[variables('dataDisks')['57'][0]]",
+        "[variables('dataDisks')['58'][0]]",
+        "[variables('dataDisks')['59'][0]]",
+        "[variables('dataDisks')['60'][0]]",
+        "[variables('dataDisks')['61'][0]]",
+        "[variables('dataDisks')['62'][0]]",
+        "[variables('dataDisks')['63'][0]]",
+        "[variables('dataDisks')['64'][0]]"
+      ]
+    },
+    "dataDisks": {
+      "0": [ ],
+      "1": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk1')]",
+          "lun": 0,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "2": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk2')]",
+          "lun": 1,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "3": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk3')]",
+          "lun": 2,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "4": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk4')]",
+          "lun": 3,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "5": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk5')]",
+          "lun": 4,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "6": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk6')]",
+          "lun": 5,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "7": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk7')]",
+          "lun": 6,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "8": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk8')]",
+          "lun": 7,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "9": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk9')]",
+          "lun": 8,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "10": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk10')]",
+          "lun": 9,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "11": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk11')]",
+          "lun": 10,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "12": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk12')]",
+          "lun": 11,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "13": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk13')]",
+          "lun": 12,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "14": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk14')]",
+          "lun": 13,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "15": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk15')]",
+          "lun": 14,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "16": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk16')]",
+          "lun": 15,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "17": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk17')]",
+          "lun": 16,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "18": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk18')]",
+          "lun": 17,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "19": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk19')]",
+          "lun": 18,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "20": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk20')]",
+          "lun": 19,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "21": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk21')]",
+          "lun": 20,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "22": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk22')]",
+          "lun": 21,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "23": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk23')]",
+          "lun": 22,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "24": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk24')]",
+          "lun": 23,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "25": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk25')]",
+          "lun": 24,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "26": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk26')]",
+          "lun": 25,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "27": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk27')]",
+          "lun": 26,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "28": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk28')]",
+          "lun": 27,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "29": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk29')]",
+          "lun": 28,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "30": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk30')]",
+          "lun": 29,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "31": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk31')]",
+          "lun": 30,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "32": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk32')]",
+          "lun": 31,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "33": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk33')]",
+          "lun": 32,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "34": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk34')]",
+          "lun": 33,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "35": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk35')]",
+          "lun": 34,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "36": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk36')]",
+          "lun": 35,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "37": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk37')]",
+          "lun": 36,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "38": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk38')]",
+          "lun": 37,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "39": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk39')]",
+          "lun": 38,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "40": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk40')]",
+          "lun": 39,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "41": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk41')]",
+          "lun": 40,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "42": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk42')]",
+          "lun": 41,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "43": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk43')]",
+          "lun": 42,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "44": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk44')]",
+          "lun": 43,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "45": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk45')]",
+          "lun": 44,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "46": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk46')]",
+          "lun": 45,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "47": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk47')]",
+          "lun": 46,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "48": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk48')]",
+          "lun": 47,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "49": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk49')]",
+          "lun": 48,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "50": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk50')]",
+          "lun": 49,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "51": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk51')]",
+          "lun": 50,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "52": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk52')]",
+          "lun": 51,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "53": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk53')]",
+          "lun": 52,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "54": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk54')]",
+          "lun": 53,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "55": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk55')]",
+          "lun": 54,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "56": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk56')]",
+          "lun": 55,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "57": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk57')]",
+          "lun": 56,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "58": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk58')]",
+          "lun": 57,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "59": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk59')]",
+          "lun": 58,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "60": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk60')]",
+          "lun": 59,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "61": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk61')]",
+          "lun": 60,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "62": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk62')]",
+          "lun": 61,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "63": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk63')]",
+          "lun": 62,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ],
+      "64": [
+        {
+          "name": "[concat(parameters('vmName'),'-ManagedDataDisk64')]",
+          "lun": 63,
+          "createOption": "Empty",
+          "diskSizeGB": "[parameters('diskSizeGB')]",
+          "managedDisk": {
+            "storageAccountType": "[parameters('StorageAccountType')]"
+          }
+        }
+      ]
+
+    }
+  },
+   "outputs": {
+      "dataDiskArray": {
+        "value": "[variables('disksArray')[parameters('DiskCount')]]",
+        "type": "array"
+      }
+    },
+  "resources": []
+}

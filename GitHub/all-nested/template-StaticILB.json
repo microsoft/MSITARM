@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      }
+    },
+    "subnetRef": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      },
+
+      "metadata": {
+        "description": "Storage performance, Standard_LRS for standard skus and Premium_LRS for premium skus"
+      }
+    },
+    "ipaddress": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      },
+
+      "metadata": {
+        "description": "Storage performance, Standard_LRS for standard skus and Premium_LRS for premium skus"
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-08-01",
+      "name": "[parameters('loadBalancerName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard"
+      },
+      "dependsOn": [
+        
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "privateIPAddress": "[parameters('ipaddress')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[parameters('subnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "UserName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 1
+    },
+    "NumberOfVMs": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "TemplateName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 1
+    },
+    "InvokedBy": {
+      "type": "string",
+      "defaultValue": "Others",
+      "allowedValues": [
+        "ServiceCatalog",
+        "CSEOTemplate",
+        "Others"
+      ]
+
+    },
+    "branch": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 1
+    }
+  },
+  "variables": {
+    "SubName": "[string(subscription().id)]",
+    "RGName": "[string(resourceGroup().name)]",
+    "TemplateName": "[replace(replace(parameters('TemplateName'),';',','),':','.')]",
+    "UserName": "[replace(replace(parameters('UserName'),';',','),':','.')]",
+    "InvokedBy": "[replace(replace(parameters('InvokedBy'),';',','),':','.')]",
+
+    "TelemetryURLdevelop": "https://armtelemetrydev.azurewebsites.net/api/Telemetry?code=CfDJ8AAAAAAAAAAAAAAAAAAAAADkeED42rRwh6Yj7yNwsaxvu9VjU2vbBX6osF6T1TLrb8XCe5kP6d2V6o39k_xTZg2SeA_4SEKH_HL2bumjACKUYwXTLlAjINrfmJuXoWEw__U_pdnxVEoEhNgislgDgPgpdn2TLjSYB0Zfv4nB9i4g8IWozb51lhX5TbZK-Kivuw",
+    "TelemetryURLmaster": "https://armtelemetryprod.azurewebsites.net/api/Telemetry?code=CfDJ8AAAAAAAAAAAAAAAAAAAAADkHWkzL6yyuUt0_Sl1L721m9GnIJpJDZTvR3t81di15T_vRN9DiNeM_iSqzvocpHp_oO3pSjON52foGcduoL8-t-n7ZLzV7w5x49zcpRWBH_f0wodBxHtYodtXd1k-a9RDkC6e_hhEy75KY6tKWouw1YVcgvHRlw4-StVPKsEOrw",
+    "TelemetryURLbeta": "[variables('TelemetryURLmaster')]",
+
+    "TelemetryBaseURL": "[concat(variables(concat('TelemetryURL',parameters('branch'))),'&branch=',parameters('branch'))]",
+    "TelemetryCreateDetails": "[concat('SubscriptionName:',variables('SubName'),';ResourceGroupName:',variables('RGName'),';userName:',parameters('UserName'),';NumberOfVMs:',parameters('NumberOfVMs'),';TemplateName:',parameters('TemplateName'),';InvokedBy:',parameters('InvokedBy'))]"
+  },
+  "outputs": {
+    "TelemetryID": {
+      "value": "[string(reference('TelemetryIDGenerator').outputs.TelemetryID.value)]",
+      "type": "string"
+    },
+    "TelemetryBaseURLInoutput": {
+      "value": "[variables('TelemetryBaseURL')]",
+      "type": "string"
+    },
+    "TelemetryDetails": {
+      "value": "[variables('TelemetryCreateDetails')]",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "name": "TelemetryIDGenerator",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('TelemetryBaseURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "CreateTelemetryLog",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('TelemetryBaseURL'),'&depId=',reference('TelemetryIDGenerator').outputs.TelemetryID.value,'&newDeployment=',variables('TelemetryCreateDetails'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "TelemetryTrackerID": {
+            "value": "[reference('TelemetryIDGenerator').outputs.TelemetryID.value]"
+          }
+        }
+      },
+      "dependsOn": [
+        "Microsoft.Resources/deployments/TelemetryIDGenerator"
+      ]
+    }
+  ]
+}

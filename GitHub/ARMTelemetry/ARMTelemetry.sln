@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARMTelemetryFunctions", "ARMTelemetryFunctions\ARMTelemetryFunctions.csproj", "{B8D8092A-ED01-4ED9-AD57-DABC2C5258CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CPE.CloudMS.TelemetryLib", "Microsoft.CPE.CloudMS.TelemetryLib\Microsoft.CPE.CloudMS.TelemetryLib.csproj", "{3530652A-5ABA-44E5-90EA-0CB15AE70B67}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8D8092A-ED01-4ED9-AD57-DABC2C5258CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8D8092A-ED01-4ED9-AD57-DABC2C5258CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8D8092A-ED01-4ED9-AD57-DABC2C5258CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8D8092A-ED01-4ED9-AD57-DABC2C5258CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3530652A-5ABA-44E5-90EA-0CB15AE70B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3530652A-5ABA-44E5-90EA-0CB15AE70B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3530652A-5ABA-44E5-90EA-0CB15AE70B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3530652A-5ABA-44E5-90EA-0CB15AE70B67}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E48FBFE1-6411-469F-AC2D-7A745E9EB526}
+	EndGlobalSection
+EndGlobal

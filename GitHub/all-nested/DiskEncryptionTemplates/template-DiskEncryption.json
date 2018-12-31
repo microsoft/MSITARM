@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string"
+    },
+    "VaultName": {
+      "type": "string"
+    },
+    "volumeType": {
+      "type": "string"
+    },
+    "AzureDiskEncryption": {
+      "type": "string"
+    },
+    "UseExistingKek": {
+      "type": "string"
+    },
+    "KeyEncryptionKeyURL": {
+      "type": "string"
+    },
+    "AADClientID": {
+      "type": "string"
+    },
+    "AADClientSecret": {
+      "type": "securestring"
+    },
+
+    "sequenceVersion": {
+      "type": "string",
+      "defaultValue": "1.0",
+      "metadata": {
+        "description": "Pass in an unique value like a GUID everytime the operation needs to be force run"
+      }
+    }
+  },
+  "variables": {
+
+    "branch": "develop",
+    "scriptsURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),'/all-scripts/')]",
+    "nestedURL": "[concat('https://raw.githubusercontent.com/Microsoft/MSITARM/',variables('branch'),'/all-nested/')]",
+
+    "vmVaultName": "[parameters('VaultName')]",
+    "keyVaultURL": "[concat('https://', variables('vmVaultName'), '.vault.azure.net/')]",
+    "delimiters": [ "/" ],
+
+    "AzureDiskEncryptionExt": "AzureDiskEncryption",
+    "AzureDiskEncryptionURL": "[concat(variables('nestedURL'),'updatevm-azureencryptionkey',tolower(parameters('UseExistingKek')),'.json') ]",
+    
+    "extensionVersion": "1.1",
+    "encryptionOperation": "EnableEncryption",
+    "keyEncryptionAlgorithm": "RSA-OAEP"
+
+  },
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('vmName'),'/', variables('AzureDiskEncryptionExt'))]",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "publisher": "Microsoft.Azure.Security",
+            "type": "AzureDiskEncryption",
+            "typeHandlerVersion": "[variables('extensionVersion')]",
+            "autoUpgradeMinorVersion": true,
+            "forceUpdateTag": "[parameters('sequenceVersion')]",
+            "settings": {
+              "AADClientID": "[parameters('AADClientID')]",
+              "KeyVaultURL": "[variables('keyVaultURL')]",
+              "KeyEncryptionKeyURL": "[parameters('keyEncryptionKeyURL')]",
+              "KeyEncryptionAlgorithm": "[variables('keyEncryptionAlgorithm')]",
+              "VolumeType": "[parameters('volumeType')]",
+              "EncryptionOperation": "[variables('encryptionOperation')]"
+            },
+            "protectedSettings": {
+              "AADClientSecret": "[parameters('AADClientSecret')]"
+            }
+          }
+        },
+        {
+          "name": "[concat('UpdateVM-',parameters('vmName'),'AzureDiskEncryption')]",
+          "type": "Microsoft.Resources/deployments",
+          "apiVersion": "2015-01-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('vmName'), variables('AzureDiskEncryptionExt'))]"
+          ],
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "[variables('AzureDiskEncryptionURL')]",
+              "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+              "vmName": {
+                "value": "[parameters('vmName')]"
+              },
+              "keyVaultResourceID": {
+                "value": "[concat(subscription().id,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.KeyVault/vaults/', variables('vmVaultName'))]"
+              },
+              "keyVaultSecretUrl": {
+                "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions',  parameters('vmName'), variables('AzureDiskEncryptionExt'))).instanceView.statuses[0].message]"
+              },
+              "keyEncryptionKeyURL": {
+                "value": "[parameters('keyEncryptionKeyURL')]"
+              }
+            }
+          }
+        }
+      ],
+      "outputs": {
+
+      }
+    }

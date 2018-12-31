@@ -1,0 +1,120 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "FailoverClusterName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "First 10 char for the netbios name of the FailoverCluster. Runbook will append 5 more to ensure its unique and total must be less than 15."
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the Virtual Machine."
+      }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "Description": "Number of Azure VM to create."
+      }
+    },
+    "ILBStaticIP": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "ILB IP"
+      }
+    },
+    "AOAGListenerName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "AO AG Listener Name"
+      }
+    },
+    "FileshareWitnessPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Fileshare Witness Path Ex: \\\\cy1sqlcorfilefs\\QuorumFSW"
+      }
+    },
+    "ClusterSetupAccount": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Account for domain joining. Example: redmond\\serviceaccount"
+      }
+    },
+    "ClusterSetupPassword": {
+      "type": "securestring",
+      "minLength": 1,
+      "metadata": {
+        "description": "Password for domain joining"
+      }
+    },
+    "NestedBaseURL": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Base URL for nested scripts & templates"
+      }
+    },
+    "SASToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SAS token to access blob/container"
+      }
+    },
+    "customScriptRelativeFolderPath": {
+      "type": "string",
+      "defaultValue": "develop/all-scripts/",
+      "metadata": {
+        "description": "Relative folder path of the custom script"
+      }
+    }
+  },
+  "variables": {
+    "scriptsURL": "[concat(parameters('NestedBaseURL'),'/all-scripts/')]",
+    "nestedURL": "[concat(parameters('NestedBaseURL'),'/all-nested/')]",
+    "SASToken": "[trim(parameters('SASToken'))]",
+
+    "vmWSFCExtensionName": "WSFCAOAGCustomExtn",
+
+    "clusterAOAGSetupFileName": "Clusteraoagsetup2012FSW.ps1",
+
+    "scriptFilePath": "[concat(parameters('customScriptRelativeFolderPath'),variables('clusterAOAGSetupFileName'))]",
+
+    "customWSFCScriptFileUri": "[concat(variables('scriptsURL'), variables('clusterAOAGSetupFileName'), variables('SASToken'))]",
+
+    "scriptParameters": "[concat( ' -ClusterName ', parameters('FailoverClusterName'),' -VMName ', parameters('vmName'), ' -InstanceCount ', parameters('numberOfInstances'),' -ILBStaticIP ', parameters('ILBStaticIP'),' -FSWPath ', parameters('FileshareWitnessPath'),' -AOAGListenerName ', parameters('AOAGListenerName'),' -ClusterSetupAccount  ',parameters('ClusterSetupAccount'),' -ClusterSetupPassword  ',parameters('ClusterSetupPassword'))]",
+    "WSFCcommandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File', ' ', variables('ScriptFilePath'), ' ', variables('scriptParameters'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),'1','/',variables('vmWSFCExtensionName'))]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.8",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[variables('customWSFCScriptFileUri')]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[variables('WSFCcommandToExecute')]"
+        }
+      }
+    }
+  ]
+}

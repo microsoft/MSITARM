@@ -1,0 +1,103 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VM to apply the DSC configuration to"
+      }
+    },
+    "NestedBaseURL": {
+      "type": "string",
+      "minLength": 5,
+      "defaultValue": "",
+      "metadata": {
+        "description": "Base URL of nested scripts/templates"
+      }
+    },
+    "SASToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SAS token to access blob/container"
+      }
+    }
+  },
+  "variables": {
+
+    "scriptsURL": "[concat(parameters('NestedBaseURL'),'/all-scripts/')]",
+    "nestedURL": "[concat(parameters('NestedBaseURL'),'/all-nested/')]",
+    "SASToken": "[trim(parameters('SASToken'))]",
+
+    "configurationFunction": "FormatDataDisk.ps1\\FormatDataDisks",
+    "formatDiskszip": "[concat('FormatDataDisk.ps1.zip',variables('SASToken'))]",
+    "modulesUrl": "[concat(variables('scriptsURL'),variables('formatDiskszip'))]",
+
+    "DataDisks": [
+      {
+        "LunNo": 0,
+        "DiskName": "H",
+        "DiskLabel": "Data"
+      },
+      {
+        "LunNo": 1,
+        "DiskName": "O",
+        "DiskLabel": "Logs"
+      },
+      {
+        "LunNo": 2,
+        "DiskName": "T",
+        "DiskLabel": "TempDB"
+      },
+      {
+        "LunNo": 3,
+        "DiskName": "I",
+        "DiskLabel": "DataI"
+      },
+      {
+        "LunNo": 4,
+        "DiskName": "J",
+        "DiskLabel": "DataJ"
+      },
+      {
+        "LunNo": 5,
+        "DiskName": "K",
+        "DiskLabel": "DataK"
+      },
+      {
+        "LunNo": 6,
+        "DiskName": "L",
+        "DiskLabel": "DataL"
+      },
+      {
+        "LunNo": 7,
+        "DiskName": "M",
+        "DiskLabel": "DataM"
+      }
+    ]
+  },
+    "resources": [
+      {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('vmName'),'/DSCExtension')]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "publisher": "Microsoft.Powershell",
+          "type": "DSC",
+          "typeHandlerVersion": "2.18",
+          "autoUpgradeMinorVersion": true,
+          "protectedSettings": {},
+          "settings": {
+            "ModulesUrl": "[variables('modulesUrl')]",
+            "SasToken": "",
+            "ConfigurationFunction": "[variables('configurationFunction')]",
+            "Properties": {
+              "vmDiskData": "[variables('DataDisks')]"
+            }
+          }
+        }
+      }
+    ]
+}

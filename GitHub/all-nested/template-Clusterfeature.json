@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VM to apply the DSC configuration to"
+      }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "Description": "Number of Azure VM to create."
+      }
+    },
+    "NestedBaseURL": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Base URL for nested scripts & templates"
+      }
+    },
+    "SASToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SAS token to access blob/container"
+      }
+    }
+  },
+  "variables": {
+    "scriptsURL": "[concat(parameters('NestedBaseURL'),'/all-scripts/')]",
+    "nestedURL": "[concat(parameters('NestedBaseURL'),'/all-nested/')]",
+    "SASToken": "[trim(parameters('SASToken'))]",
+
+    "vmExtensionName": "DSCExtension",
+    "vmWSFCExtensionName": "Clusterfeature",
+    "dscClusterfeatureFunction": "Clusterfeature.ps1\\Clusterfeature",
+    "ClusterfeatureZip": "[concat('Clusterfeature.ps1.zip',variables('SASToken'))]",
+    "modulesPreConfigDSCUrl": "[concat(variables('scriptsURL'),variables('ClusterfeatureZip'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),copyindex(1),'/', variables('vmExtensionName'))]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "DSCExtensionLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.18",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "ModulesUrl": "[variables('modulesPreConfigDSCUrl')]",
+          "SasToken": "",
+          "ConfigurationFunction": "[variables('dscClusterfeatureFunction')]",
+          "Properties": {
+          }
+        }
+      }
+    }
+  ]
+}

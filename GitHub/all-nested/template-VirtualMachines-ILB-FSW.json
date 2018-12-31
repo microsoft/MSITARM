@@ -1,0 +1,1031 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      }
+    },
+    "loadBalancerName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the Virtual Machine."
+      }
+    },
+    "AvailabilitySet": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name for the AvailabilitySet."
+      }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "defaultValue": 2,
+	  "minValue":2,
+      "metadata": {
+        "description": "Number of VMs to deploy"
+      }
+    },
+    "localAdminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Local Username for the Virtual Machine."
+      }
+    },
+    "localAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Local Password for the Virtual Machine."
+      }
+    },
+    "domainJoinUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for domain joining"
+      }
+    },
+    "domainJoinPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for domain joining"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_A2",
+      "metadata": {
+        "description": "Size for the Virtual Machine."
+      }
+    },
+    "AcceleratedNetworking": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "false",
+        "true"
+      ],
+      "metadata": {
+        "description": "Accelerated Networking can only be enabled on supported SKUs.  See https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell for details."
+      }
+    },
+    "imagePublisher": {
+      "type": "string",
+      "defaultValue": "MicrosoftWindowsServer",
+      "allowedValues": [
+        "MicrosoftWindowsServer",
+        "MicrosoftSQLServer"
+      ],
+      "metadata": {
+        "description": "OS Image Publisher. https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-cli-ps-findimage/"
+      }
+    },
+    "imageOffer": {
+      "type": "string",
+      "defaultValue": "WindowsServer",
+      "metadata": {
+        "description": "Allowed Windows values: WindowsServer. Allowed SQL Values: SQL2012SP2-WS2012, SQL2012SP2-WS2012R2,SQL2014-WS2012R2, SQL2014SP1-WS2012R2, SQL2016CTP3-WS2012R2, SQL2016CTP3.1-WS2012R2, SQL2016CTP3.2-WS2012R2, SQL2016RC3-WS2012R2v2."
+      }
+    },
+    "StorageAccountType": {
+      "type": "string",
+      "minLength": 1,
+      "allowedValues": [
+        "Standard_LRS",
+        "Premium_LRS",
+        "StandardSSD_LRS"
+      ],
+      "metadata": {
+        "description": "Storage performance, Standard_LRS for standard skus and Premium_LRS for premium skus"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "2012-R2-Datacenter",
+      "metadata": {
+        "description": "Allowed Windows values: 2008-R2-SP1, 2012-Datacenter, 2012-R2-Datacenter. Allowed SQL values: Enterprise, Standard, Web, Express."
+      }
+    },
+    "DiskConfig": {
+      "type": "string",
+      "defaultValue": "Win",
+      "allowedValues": [
+        "Win",
+        "IIS",
+        "SQLStd",
+        "SQLPrem",
+        "SQLStdSSD"
+      ]
+    },
+      "H_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the I drive."
+         }
+      },
+      "H_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "O_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the I drive."
+         }
+      },
+      "O_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "T_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the I drive."
+         }
+      },
+      "T_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "I_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the I drive."
+         }
+      },
+      "I_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "J_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the J drive."
+         }
+      },
+      "J_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "K_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the K drive."
+         }
+      },
+      "K_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "L_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the L drive."
+         }
+      },
+      "L_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+      "M_DriveSize":{  
+         "type":"int",
+         "defaultValue":0,
+         "minValue":0,
+         "maxValue":4096,
+         "metadata":{  
+            "description":"The size in GB for the L drive."
+         }
+      },
+      "M_DriveCache":{  
+         "type":"string",
+         "defaultValue":"ReadOnly",
+         "metadata":{  
+            "description":"Use Caching?"
+         }
+      },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The FQDN of the AD domain"
+      }
+    },
+    "localAdmins": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "local admins that can login to the VMs. csv list of domain\\user"
+      }
+    },
+    "SQLAdmins": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SQL SYS admins that can login to the Default SQL Instance instaqlled on the VM. csv list of domain\\user"
+      }
+    },
+    "virtualNetwork": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Name for the VirtualNetwork"
+      }
+    },
+    "vnetResourceGroup": {
+      "type": "string",
+      "defaultValue": "ERNetwork",
+      "metadata": {
+        "description": "Name for the Resource Group that contains VirtualNetwork"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "defaultValue": "Subnet-1",
+      "metadata": {
+        "description": "Name for the subnet"
+      }
+    },
+    "ouPath": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The Organizational Unit the VM will join"
+      }
+    },
+    "NestedBaseURL": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Base URL for nested scripts & templates"
+      }
+    },
+    "SASToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SAS token to access blob/container"
+      }
+    }
+  },
+  "variables": {
+    "apiVersion": "2015-06-15",
+    "MSITVersion": "4.1.0",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadBalancerName'))]",
+    "nicName": "[parameters('vmName')]",
+    "scriptsURL": "[concat(parameters('NestedBaseURL'),'/all-scripts/')]",
+    "nestedURL": "[concat(parameters('NestedBaseURL'),'/all-nested/')]",
+    "SASToken": "[trim(parameters('SASToken'))]",
+
+    "availabilitySetName": "[parameters('AvailabilitySet')]",
+    "DomainJoinzip": "[concat('DomainJoin.ps1.zip',variables('SASToken'))]",
+    "formatDiskszip": "[concat('FormatDataDisk.ps1.zip',variables('SASToken'))]",
+
+    "formatDiskstemplate": "[concat('template-ConfigureDataDisks.json',variables('SASToken'))]",
+    "SetStaticIP": "[concat('template-SetStaticIP.json',variables('SASToken'))]",
+    "SetBackendPool": "[concat('template-BackendPool.json',variables('SASToken'))]",
+    "modulesUrl": "[concat(variables('scriptsURL'),variables('DomainJoinzip'))]",
+    "FormatDisksUrl": "[concat(variables('nestedURL'), variables('formatDiskstemplate'))]",
+    "SetStaticIPUrl": "[concat(variables('nestedURL'),variables('SetStaticIP'))]",
+    "SetBackendPoolUrl": "[concat(variables('nestedURL'),variables('SetBackendPool'))]",
+    "ConvertILBStatictemplate": "[concat('template-StaticILB.json',variables('SASToken'))]",
+    "ConvertILBStaticUrl": "[concat(variables('nestedURL'),variables('ConvertILBStatictemplate'))]",
+
+    "vnetSubscriptionid": "[subscription().subscriptionId]",
+    "vnetID": "[concat('/subscriptions/',variables('vnetSubscriptionid'),'/resourceGroups/',parameters('vnetResourceGroup'),'/providers/Microsoft.Network/virtualnetworks/',parameters('virtualNetwork'))]",
+    "imageOffer": "[parameters('imageOffer')]",
+    "imagePublisher": "[parameters('imagePublisher')]",
+    "sku": "[parameters('sku')]",
+    "nicName": "[parameters('vmName')]",
+
+    "subnetName": "[parameters('subnetName')]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
+    "autologonContent": "[concat('<AutoLogon><Password><Value>',parameters('localAdminPassword'),'</Value></Password><Domain>.</Domain><Enabled>true</Enabled><LogonCount>1</LogonCount><Username>',parameters('localAdminUserName'),'</Username></AutoLogon>')]",
+    "firstLogonCommands": "<FirstLogonCommands><SynchronousCommand><CommandLine>netsh advfirewall firewall set rule group=&quot;Windows Management Instrumentation (WMI)&quot; new enable=Yes</CommandLine><Description>Update Firewall Settings</Description><Order>1</Order></SynchronousCommand><SynchronousCommand><CommandLine>logoff.exe</CommandLine><Description>Logoff</Description><Order>2</Order></SynchronousCommand></FirstLogonCommands>",
+    "domainJoinOptions": 3,
+    "vmExtensionName": "DSCExtension",
+    "diskCaching": "None",
+	"DataDisk_H":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskH')]",
+         "lun":0,
+         "createOption":"Empty",
+         "caching":"[parameters('H_DriveCache')]",
+         "diskSizeGB":"[parameters('H_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_O":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskO')]",
+         "lun":1,
+         "createOption":"Empty",
+         "caching":"[parameters('O_DriveCache')]",
+         "diskSizeGB":"[parameters('O_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_T":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskT')]",
+         "lun":2,
+         "createOption":"Empty",
+         "caching":"[parameters('T_DriveCache')]",
+         "diskSizeGB":"[parameters('T_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_I":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskI')]",
+         "lun":3,
+         "createOption":"Empty",
+         "caching":"[parameters('I_DriveCache')]",
+         "diskSizeGB":"[parameters('I_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_J":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskJ')]",
+         "lun":4,
+         "createOption":"Empty",
+         "caching":"[parameters('J_DriveCache')]",
+         "diskSizeGB":"[parameters('J_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_K":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskK')]",
+         "lun":5,
+         "createOption":"Empty",
+         "caching":"[parameters('K_DriveCache')]",
+         "diskSizeGB":"[parameters('K_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_L":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskL')]",
+         "lun":6,
+         "createOption":"Empty",
+         "caching":"[parameters('L_DriveCache')]",
+         "diskSizeGB":"[parameters('L_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "DataDisk_M":{  
+         "name":"[concat(parameters('vmName'),'-DataDiskM')]",
+         "lun":7,
+         "createOption":"Empty",
+         "caching":"[parameters('M_DriveCache')]",
+         "diskSizeGB":"[parameters('M_DriveSize')]",
+         "managedDisk":{  
+            "storageAccountType":"[parameters('StorageAccountType')]"
+         }
+      },
+      "AllDisksStart":"[concat('[',' ')]",
+      "AllDisksTillH":"[if(greater(parameters('H_DriveSize'), 0), concat(variables('AllDisksStart'),string(variables('DataDisk_H'))), variables('AllDisksStart'))]",
+      "AllDisksTillO":"[if(greater(parameters('O_DriveSize'), 0), concat(variables('AllDisksTillH'),',',string(variables('DataDisk_O'))), variables('AllDisksTillH'))]",
+      "AllDisksTillT":"[if(greater(parameters('T_DriveSize'), 0), concat(variables('AllDisksTillO'),',',string(variables('DataDisk_T'))), variables('AllDisksTillO'))]",
+      "AllDisksTillI":"[if(greater(parameters('I_DriveSize'), 0), concat(variables('AllDisksTillT'),',',string(variables('DataDisk_I'))), variables('AllDisksTillT'))]",
+      "AllDisksTillJ":"[if(greater(parameters('J_DriveSize'), 0), concat(variables('AllDisksTillI'),',',string(variables('DataDisk_J'))), variables('AllDisksTillI'))]",
+      "AllDisksTillK":"[if(greater(parameters('K_DriveSize'), 0), concat(variables('AllDisksTillJ'),',',string(variables('DataDisk_K'))), variables('AllDisksTillJ'))]",
+      "AllDisksTillL":"[if(greater(parameters('L_DriveSize'), 0), concat(variables('AllDisksTillK'),',',string(variables('DataDisk_L'))), variables('AllDisksTillK'))]",
+      "AllDisksTillM":"[if(greater(parameters('M_DriveSize'), 0), concat(variables('AllDisksTillL'),',',string(variables('DataDisk_M'))), variables('AllDisksTillL'))]",
+      "AllDisksEnd":"[json(concat(replace(variables('AllDisksTillM'),' ,', ''),']'))]",
+    "WinDisk":{  
+         "vmSize":"[parameters('vmSize')]",
+         "dataDisks":{  
+            "1":{  
+               "DiskName":"I",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('I_DriveSize')]"
+            },
+            "2":{  
+               "DiskName":"J",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('J_DriveSize')]"
+            },
+            "3":{  
+               "DiskName":"K",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('K_DriveSize')]"
+            },
+            "4":{  
+               "DiskName":"L",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('L_DriveSize')]"
+            }
+         }
+      },
+      "IISDisk":{  
+         "vmSize":"[parameters('vmSize')]",
+         "dataDisks":{  
+            "1":{  
+               "DiskName":"I",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('I_DriveSize')]"
+            },
+            "2":{  
+               "DiskName":"J",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('J_DriveSize')]"
+            },
+            "3":{  
+               "DiskName":"K",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('K_DriveSize')]"
+            },
+            "4":{  
+               "DiskName":"L",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('L_DriveSize')]"
+            }
+         }
+      },
+      "SQLStdDisk":{  
+         "vmSize":"[parameters('vmSize')]",
+         "SQLServer":{  
+            "DataPath":"H:\\MSSqlServer\\MSSQL\\DATA",
+            "LogPath":"O:\\MSSqlServer\\MSSQL\\DATA",
+            "TempDbPath":"D:\\MSSqlServer\\MSSQL\\DATA"
+         },
+         "dataDisks":{  
+            "1":{  
+               "DiskName":"H",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('H_DriveSize')]"
+            },
+            "2":{  
+               "DiskName":"O",
+               "DiskLabel":"Logs",
+               "DiskSize":"[parameters('O_DriveSize')]"
+            },
+            "3":{  
+               "DiskName":"T",
+               "DiskLabel":"TempDB",
+               "DiskSize":"[parameters('T_DriveSize')]"
+            },
+            "4":{  
+               "DiskName":"I",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('I_DriveSize')]"
+            },
+            "5":{  
+               "DiskName":"J",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('J_DriveSize')]"
+            },
+            "6":{  
+               "DiskName":"K",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('K_DriveSize')]"
+            },
+            "7":{  
+               "DiskName":"L",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('L_DriveSize')]"
+            },
+            "8":{  
+               "DiskName":"M",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('M_DriveSize')]"
+            }
+         }
+      },
+      "SQLPremDisk":{  
+         "vmSize":"[parameters('vmSize')]",
+         "SQLServer":{  
+            "DataPath":"H:\\MSSqlServer\\MSSQL\\DATA",
+            "LogPath":"O:\\MSSqlServer\\MSSQL\\DATA",
+            "TempDbPath":"D:\\MSSqlServer\\MSSQL\\DATA"
+         },
+         "dataDisks":{  
+            "1":{  
+               "DiskName":"H",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('H_DriveSize')]"
+            },
+            "2":{  
+               "DiskName":"O",
+               "DiskLabel":"Logs",
+               "DiskSize":"[parameters('O_DriveSize')]"
+            },
+            "3":{  
+               "DiskName":"T",
+               "DiskLabel":"TempDB",
+               "DiskSize":"[parameters('T_DriveSize')]"
+            },
+            "4":{  
+               "DiskName":"I",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('I_DriveSize')]"
+            },
+            "5":{  
+               "DiskName":"J",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('J_DriveSize')]"
+            },
+            "6":{  
+               "DiskName":"K",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('K_DriveSize')]"
+            },
+            "7":{  
+               "DiskName":"L",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('L_DriveSize')]"
+            },
+            "8":{  
+               "DiskName":"M",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('M_DriveSize')]"
+            }
+         }
+      },
+      "SQLStdSSDDisk":{  
+         "vmSize":"[parameters('vmSize')]",
+         "SQLServer":{  
+            "DataPath":"H:\\MSSqlServer\\MSSQL\\DATA",
+            "LogPath":"O:\\MSSqlServer\\MSSQL\\DATA",
+            "TempDbPath":"D:\\MSSqlServer\\MSSQL\\DATA"
+         },
+         "dataDisks":{  
+            "1":{  
+               "DiskName":"H",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('H_DriveSize')]"
+            },
+            "2":{  
+               "DiskName":"O",
+               "DiskLabel":"Logs",
+               "DiskSize":"[parameters('O_DriveSize')]"
+            },
+            "3":{  
+               "DiskName":"T",
+               "DiskLabel":"TempDB",
+               "DiskSize":"[parameters('T_DriveSize')]"
+            },
+            "4":{  
+               "DiskName":"I",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('I_DriveSize')]"
+            },
+            "5":{  
+               "DiskName":"J",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('J_DriveSize')]"
+            },
+            "6":{  
+               "DiskName":"K",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('K_DriveSize')]"
+            },
+            "7":{  
+               "DiskName":"L",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('L_DriveSize')]"
+            },
+            "8":{  
+               "DiskName":"M",
+               "DiskLabel":"Data",
+               "DiskSize":"[parameters('M_DriveSize')]"
+            }
+         }
+      },
+      "DiskSKU":"[variables(concat(parameters('DiskConfig'),'Disk'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('nicName'),copyindex(1),'nic1')]",
+      "apiVersion": "2018-02-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NetworkInterface",
+        "MSITVersion": "[variables('MSITVersion')]"
+      },
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": "[parameters('AcceleratedNetworking')]"
+      }
+    },
+    {
+      "apiVersion": "2016-04-30-preview",
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[variables('availabilitySetName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "AvailabilitySet"
+      },
+      "properties": {
+        "platformFaultDomainCount": "2",
+        "platformUpdateDomainCount": "10",
+        "managed": "true"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmName'),copyindex(1))]",
+      "apiVersion": "2018-04-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "VirtualMachine",
+        "MSITVersion": "[variables('MSITVersion')]",
+        "VMRequestor": "[parameters('domainJoinUserName')]"
+      },
+      "copy": {
+        "name": "virtualMachineLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'),copyindex(1),'nic1')]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('DiskSKU').vmSize]"
+        },
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('vmName'),copyindex(1))]",
+          "adminUsername": "[parameters('localAdminUserName')]",
+          "adminPassword": "[parameters('localAdminPassword')]",
+          "windowsConfiguration": {
+            "additionalUnattendContent": [
+              {
+                "passName": "oobesystem",
+                "componentName": "Microsoft-Windows-Shell-Setup",
+                "settingName": "Autologon",
+                "content": "[variables('autologonContent')]"
+              },
+              {
+                "passName": "oobesystem",
+                "componentName": "Microsoft-Windows-Shell-Setup",
+                "settingName": "FirstLogonCommands",
+                "content": "[variables('firstLogonCommands')]"
+              }
+            ],
+            "winRM": {
+              "listeners": [
+                {
+                  "protocol": "Http"
+                }
+              ]
+            }
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[parameters('sku')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "caching": "ReadWrite",
+            "createOption": "FromImage",
+            "name": "[concat(parameters('vmName'),copyindex(1),'-osManagedDisk')]",
+            "managedDisk": {
+              "storageAccountType": "[parameters('StorageAccountType')]"
+            }
+          },
+          "dataDisks":"[json(replace(string(variables('AllDisksEnd')),parameters('vmName'),concat(parameters('vmName'),if(equals(parameters('numberOfInstances'),1),'', copyindex(1)))))]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'),copyindex(1),'nic1'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('nicName'),copyindex(1),'','-SetStaticIP')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[concat(parameters('vmName'),copyindex(1),'nic1')]",
+        "[concat(parameters('vmName'),copyindex(1))]"
+      ],
+      "copy": {
+        "name": "StaticIPLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('SetStaticIPUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[concat(parameters('vmName'),copyindex(1))]"
+          },
+          "AcceleratedNetworking": {
+            "value": "[parameters('AcceleratedNetworking')]"
+          },
+          "ipAddress": {
+            "value": "[reference(concat(parameters('vmName'),copyindex(1),'nic1')).ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "subnetRef": {
+            "value": "[variables('subnetRef')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-08-01",
+      "name": "[parameters('loadBalancerName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard"
+      },
+      "dependsOn": ["StaticIPLoop"],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "BackendPool1"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancerName')), '/frontendIPConfigurations/LoadBalancerFrontend')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancerName')), '/backendAddressPools/BackendPool1')]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancerName')), '/probes/lbprobe')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": "[if(contains(parameters('DiskConfig'), 'SQL'), 1433, 443)]",
+              "backendPort": "[if(contains(parameters('DiskConfig'), 'SQL'), 1433, 443)]",
+              "enableFloatingIP": true,
+              "loadDistribution": "SourceIPProtocol",
+              "idleTimeoutInMinutes": 15
+            },
+            "name": "lbrule"
+          }
+        ],
+        "probes": [
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "port": 50001,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            },
+            "name": "lbprobe"
+          }
+        ]
+      }
+    },
+    {
+      "name": "[concat(variables('nicName'),copyindex(1),'','-SetBackendPool')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "[parameters('loadBalancerName')]"
+      ],
+      "copy": {
+        "name": "BackendLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('SetBackendPoolUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nicName": {
+            "value": "[concat(parameters('vmName'),copyindex(1))]"
+          },
+          "AcceleratedNetworking": {
+            "value": "[parameters('AcceleratedNetworking')]"
+          },
+          "ipAddress": {
+            "value": "[reference(concat(parameters('vmName'),copyindex(1),'nic1')).ipConfigurations[0].properties.privateIPAddress]"
+          },
+          "subnetRef": {
+            "value": "[variables('subnetRef')]"
+          },
+          "lbID": {
+            "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadBalancerName'))]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "[concat(parameters('vmName'),'-ConvertILBToStatic')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": ["BackendLoop"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('ConvertILBStaticUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "loadBalancerName": {
+            "value": "[parameters('loadBalancerName')]"
+          },
+          "subnetRef": {
+            "value": "[variables('subnetRef')]"
+          },
+          "ipaddress": {
+            "value": "[reference(parameters('loadBalancerName')).frontendIPConfigurations[0].properties.privateIPAddress]"
+          }
+
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),copyindex(1),'/', variables('vmExtensionName'))]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "DSCExtensionLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'),copyindex(1))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.18",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "ModulesUrl": "[variables('modulesUrl')]",
+          "SasToken": "",
+          "ConfigurationFunction": "DomainJoin.ps1\\DomainJoin",
+          "Properties": {
+            "Domain": "[parameters('DomainName')]",
+            "LocalAccount": {
+              "UserName": "[parameters('localAdminUserName')]",
+              "Password": "PrivateSettingsRef:localPassword"
+            },
+            "DomainAccount": {
+              "UserName": "[parameters('domainJoinUserName')]",
+              "Password": "PrivateSettingsRef:DomainPassword"
+            },
+            "LocalAdmins": "[parameters('localAdmins')]",
+            "SQLAdmins": "[parameters('SQLAdmins')]",
+            "OU": "[parameters('ouPath')]",
+            "scriptFolderUrl": "[variables('scriptsURL')]",
+            "sastoken": "[variables('SASToken')]"
+          }
+        },
+        "protectedSettings": {
+          "Items": {
+            "LocalPassword": "[parameters('localAdminPassword')]",
+            "DomainPassword": "[parameters('domainJoinPassword')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "name": "[concat(parameters('vmName'),copyindex(1),'-FormatDataDisks')]",
+      "type": "Microsoft.Resources/deployments",
+      "copy": {
+        "name": "FormatDataDisksLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('FormatDisksUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "vmName": {
+            "value": "[concat(parameters('vmName'),copyindex(1))]"
+          },
+          "NestedBaseURL": {
+            "value": "[parameters('NestedBaseURL')]"
+          },
+          "SASToken": {
+            "value": "[variables('SASToken')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(parameters('vmName'),copyindex(1)),variables('vmExtensionName'))]"
+
+      ]
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'),copyindex(1),'/BGInfo')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'),copyindex(1))]"
+      ],
+      "copy": {
+        "name": "BGInfoLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "BGInfo",
+        "typeHandlerVersion": "2.1",
+        "settings": {},
+        "protectedSettings": null
+      }
+    }
+  ],
+  "outputs": {
+    "ipaddress": {
+      "value": "[reference(parameters('loadBalancerName')).frontendIPConfigurations[0].properties.privateIPAddress]",
+      "type": "string"
+    }
+  }
+}
+

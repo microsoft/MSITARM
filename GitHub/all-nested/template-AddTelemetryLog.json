@@ -1,0 +1,90 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "TelemetryID": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "TemplateName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "ResourceName": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 1
+    },
+    "Logtype": {
+      "type": "string",
+      "defaultValue": "StatusLog",
+      "allowedValues": [
+        "StatusLog",
+        "MessageLog"
+      ]
+    },
+    "Status": {
+      "type": "string",
+      "defaultValue": "NONE",
+      "allowedValues": [
+        "NONE",
+        "Success",
+        "Fail"
+      ]
+    },
+    "ResourceType": {
+      "type": "string",
+      "defaultValue": "MasterTemplate",
+      "allowedValues": [
+        "MasterTemplate",
+        "LinkedTemplate",
+        "NestedTemplate",
+        "DSC",
+        "CustomScriptExtn",
+        "AzureCloudResource",
+        "Others"
+      ]
+    },
+    "Message": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "branch": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 1
+    }
+  },
+  "variables": {
+    "TelemetryURLdevelop": "https://armtelemetrydev.azurewebsites.net/api/Telemetry?code=CfDJ8AAAAAAAAAAAAAAAAAAAAADkeED42rRwh6Yj7yNwsaxvu9VjU2vbBX6osF6T1TLrb8XCe5kP6d2V6o39k_xTZg2SeA_4SEKH_HL2bumjACKUYwXTLlAjINrfmJuXoWEw__U_pdnxVEoEhNgislgDgPgpdn2TLjSYB0Zfv4nB9i4g8IWozb51lhX5TbZK-Kivuw",
+    "TelemetryURLmaster": "https://armtelemetryprod.azurewebsites.net/api/Telemetry?code=CfDJ8AAAAAAAAAAAAAAAAAAAAADkHWkzL6yyuUt0_Sl1L721m9GnIJpJDZTvR3t81di15T_vRN9DiNeM_iSqzvocpHp_oO3pSjON52foGcduoL8-t-n7ZLzV7w5x49zcpRWBH_f0wodBxHtYodtXd1k-a9RDkC6e_hhEy75KY6tKWouw1YVcgvHRlw4-StVPKsEOrw",
+    "TelemetryURLbeta": "[variables('TelemetryURLmaster')]",
+
+    "TemplateName": "[replace(replace(parameters('TemplateName'),';',','),':','.')]",
+    "ResourceName": "[replace(replace(parameters('ResourceName'),';',','),':','.')]",
+    "Message": "[if(equals(parameters('Logtype'),'StatusLog'),parameters('Status'),replace(replace(parameters('Message'),';',','),':','.'))]",
+    "Name": "[concat('AddLog-',string(guid(resourceGroup().id, deployment().name)))]",
+    "TelemetryBaseURL": "[concat(variables(concat('TelemetryURL',parameters('branch'))),'&branch=',parameters('branch'))]",
+    "TelemetryLogDetails": "[concat('TemplateName:',variables('TemplateName'),';ResourceType:',parameters('ResourceType'),';ResourceName:',variables('ResourceName'),';Logtype:',parameters('Logtype'),';Message:',variables('Message'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "Condition": "[greater(length(string(parameters('TelemetryID'))),5)]",
+      "name": "[variables('Name')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('TelemetryBaseURL'),'&depId=',parameters('TelemetryID'),'&logDepDetails=',variables('TelemetryLogDetails'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "TelemetryTrackerID": {
+            "value": "[parameters('TelemetryID')]"
+          }
+        }
+      }
+    }
+  ]
+}

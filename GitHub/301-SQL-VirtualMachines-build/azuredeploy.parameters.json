@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": ""
+    },
+    "numberOfInstances": {
+      "value": 2
+    },
+    "AvailabilitySet": {
+      "value": ""
+    },
+    "localAdminUserName": {
+      "value": ""
+    },
+    "localAdminPassword": {
+      "value": ""
+    },
+    "domainJoinUserName": {
+      "value": ""
+    },
+    "domainJoinPassword": {
+      "value": ""
+    },
+    "SQLServerAccount": {
+      "value": ""
+    },
+    "SQLServerPassword": {
+      "value": ""
+    },
+    "SQLAgentAccount": {
+      "value": ""
+    },
+    "SQLAgentPassword": {
+      "value": ""
+    },
+    "localAdmins": {
+      "value": ""
+    },
+    "SQLAdmins": {
+      "value": ""
+    },
+    "domain": {
+      "value": ""
+    },
+    "imagePublisher": {
+      "value": "MicrosoftSQLServer"
+    },
+    "imageOffer": {
+      "value": "SQL2016SP1-WS2016"
+    },
+    "storageAccountType": {
+      "value": "Standard_LRS"
+    },
+    "sku": {
+      "value": "Enterprise"
+    },
+    "virtualNetwork": {
+      "value": ""
+    },
+    "vnetResourceGroup": {
+      "value": ""
+    },
+    "subnetName": {
+      "value": "Subnet-1"
+    },
+    "vmSize": {
+      "value": "Standard_D4_v2"
+    },
+    "AcceleratedNetworking": {
+      "value": "true"
+    },
+    "H_DriveSize": {
+      "value": 10
+    },
+    "O_DriveSize": {
+      "value": 10
+    },
+	"T_DriveSize": {
+      "value": 10
+    },
+    "I_DriveSize": {
+      "value": 10
+    },
+	"J_DriveSize": {
+      "value": 10
+    },
+    "K_DriveSize": {
+      "value": 10
+    },
+    "L_DriveSize": {
+      "value": 10
+    },
+    "M_DriveSize": {
+      "value": 10
+    }
+  }
+}

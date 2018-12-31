@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": ""
+    },
+    "AvailabilitySet": {
+      "value": ""
+    },
+    "loadBalancerName": {
+      "value": ""
+    },
+    "localAdminUserName": {
+      "value": ""
+    },
+    "localAdminPassword": {
+      "value": ""
+    },
+    "domainJoinUserName": {
+      "value": ""
+    },
+    "domainJoinPassword": {
+      "value": ""
+    },
+    "localAdmins": {
+      "value": ""
+    },
+    "domain": {
+      "value": ""
+    },
+    "imagePublisher": {
+      "value": "MicrosoftWindowsServer"
+    },
+    "imageOffer": {
+      "value": "WindowsServer"
+    },
+	"storageAccountType": {
+      "value": "Standard_LRS"
+    },
+    "sku": {
+      "value": "2016-Datacenter"
+    },
+    "numberOfInstances": {
+      "value": 2
+    },
+    "virtualNetwork": {
+      "value": ""
+    },
+    "vnetResourceGroup": {
+      "value": ""
+    },
+    "subnetName": {
+      "value": "Subnet-1"
+    },
+    "vmSize": {
+      "value": "Standard_D3_v2"
+    },
+    "AcceleratedNetworking": {
+      "value": "true"
+    },
+    "DiskConfig": {
+      "value": "IIS"
+    },
+    "I_DriveSize": {
+      "value": 10
+    },
+    "J_DriveSize": {
+      "value": 10
+    },
+	"K_DriveSize": {
+      "value": 10
+    },
+	"L_DriveSize": {
+      "value": 10
+    }
+  }
+}

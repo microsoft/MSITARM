@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the existing VM to apply the DSC configuration to"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_A2",
+      "metadata": {
+        "description": "Standard_A2"
+      }
+    },
+    "DiskConfig": {
+      "type": "string",
+      "defaultValue": "Win",
+      "metadata": {
+        "description": "IIS/SQLPrem,SQLStd/Win"
+      }
+    },
+    "NestedBaseURL": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Base URL for nested scripts & templates"
+      }
+    },
+    "SASToken": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "SAS token to access blob/container"
+      }
+    }
+  },
+  "variables": {
+
+    "scriptsURL": "[concat(parameters('NestedBaseURL'),'/all-scripts/')]",
+    "nestedURL": "[concat(parameters('NestedBaseURL'),'/all-nested/')]",
+    "SASToken": "[trim(parameters('SASToken'))]",
+
+    "IISDeployzip": "[concat('Deploy-WebServer.ps1.zip',variables('SASToken'))]",
+
+    "configurationFunction": "Deploy-WebServer.ps1\\DeployWebServer",
+    "modulesUrl": "[concat(variables('scriptsURL'),variables('IISDeployzip'))]"
+  },
+    "resources": [
+    {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "name": "[concat(parameters('vmName'),'/DSCExtension')]",
+        "apiVersion": "2015-06-15",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.18",
+            "autoUpgradeMinorVersion": true,
+            "protectedSettings": {},
+            "settings": {
+                "ModulesUrl": "[variables('modulesUrl')]",
+                "SasToken": "",
+                "ConfigurationFunction": "[variables('configurationFunction')]",
+                "Properties": []
+            }
+        }
+    }]
+}
+
